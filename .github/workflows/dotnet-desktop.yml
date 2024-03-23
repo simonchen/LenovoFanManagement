@@ -64,9 +64,9 @@ jobs:
 
     env:
       Platforms: x64
-      Solution_Name: DellFanManagement.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
-      Wpf_Project_Path: DellFanManagementApp\DellFanManagementApp.csproj
-      Wpf_Project_Directory: DellFanManagementApp
+      Solution_Name: LenovoFanManagement.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
+      Wpf_Project_Path: LenovoFanManagementApp\LenovoFanManagementApp.csproj
+      Wpf_Project_Directory: LenovoFanManagementApp
       #Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       #Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       #Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
