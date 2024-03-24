@@ -6,14 +6,21 @@ Windows Desktop App. to manage Lenovo Fan RPM special for Thinkpad E16 gen 1 ，
 
 This project is based on [ec_tpfan](https://github.com/simonchen/ec_tpfan)
 
-## 允许测试签名 (Allowing to test signing ON）
+## 允许测试签名 (Ttest signing ON）
 LenovoFan.exe需要加载驱动程序，为防上不能正常加载，请执行下命命令，允许测试签名：
 ```
 bcdedit -set TESTSIGNING ON
 ```
 **注意：** BitLock如果打开，重启完重启后，将会问密钥进入！（**请预先备份BitLock密钥到u盘**）
 
-## 系统启动时运行
+## 添加到任务计划 (v1.1)
+v1.1版本及以后，推荐使用，一键打开/关闭。
+- 以管理员权限运行
+- 登录时运行
+- 每分钟自动检测/重启
+- 运行在交流电源或电池模式
+
+## 系统启动时运行 (v1.0)
 LenovoFan.exe 需要获取管理员权限才能正常运行，建议执行下面UAC命令，调整为“从不通知”，
 可以避免每次系统启动时提示需要管理员权限运行。
 ···
