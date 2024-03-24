@@ -1,8 +1,8 @@
 # LenovoFanManagement （中文版）
 
-Windows Desktop App. to manage Lenovo Fan RPM special for Thinkpad E16 gen 1 
-OS: Windows 10 / 11
-Platform: x64
+Windows Desktop App. to manage Lenovo Fan RPM special for Thinkpad E16 gen 1 ，but it might works with other type of Thinkpad.
+- OS: Windows 10 / 11
+- Platform: x64
 
 This project is based on [ec_tpfan](https://github.com/simonchen/ec_tpfan)
 
