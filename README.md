@@ -8,7 +8,7 @@ This project is based on [ec_tpfan](https://github.com/simonchen/ec_tpfan)
 
 ## 功能简述和使用方法
 
-### 平滑模式
+### 平滑模式 (推荐使用)
 
 <img src="LenovoFanMan_consistent.png" width="60%" height="60%" />
 
