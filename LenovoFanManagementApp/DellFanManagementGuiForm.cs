@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using System.IO;
+using System.Diagnostics;
 
 namespace DellFanManagement.App
 {
@@ -219,6 +220,7 @@ namespace DellFanManagement.App
 
             // Startup run
             int? ret = _configurationStore.GetIntOption(ConfigurationOption.StartupEnabled);
+            /*
             RegistryKey _registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
             string path = _registryKey.GetValue(STARTUP_NAME, "").ToString();
             if (ret == 0 || path.Length == 0)
@@ -226,6 +228,30 @@ namespace DellFanManagement.App
                 startupCheckBox.Checked = false;
             }
             _registryKey.Close();
+            */
+            string output = "";
+            try
+            {
+                Process p = new Process();
+                p.StartInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "schtasks.exe");
+                p.StartInfo.Arguments = " /query /tn \"LenovoFanManagement\"";
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.Start();
+                p.WaitForExit();
+                output = p.StandardOutput.ReadToEnd();
+                p.Close();
+            }catch (Exception)
+            {
+                // do nothing
+            }
+
+            if (ret == 0 || !output.Contains("LenovoFanManagement") )
+            {
+                startupCheckBox.Checked = false;
+            }
 
             // Consistency mode settings.
             int? lowerTemperatureThreshold = _configurationStore.GetIntOption(ConfigurationOption.ConsistencyModeLowerTemperatureThreshold);
@@ -1009,6 +1035,61 @@ namespace DellFanManagement.App
         private void StartupCheckBoxChangedEventHandler(Object sender, EventArgs e)
         {
             _configurationStore.SetOption(ConfigurationOption.StartupEnabled, startupCheckBox.Checked ? 1 : 0);
+            string xmlPath = string.Format("{0}{1}{2}", Directory.GetCurrentDirectory(), Path.DirectorySeparatorChar, "task.xml");
+            if (startupCheckBox.Checked)
+            {
+                if (File.Exists(xmlPath))
+                {
+                    // Replace {exe_path} with current path
+                    string filename = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
+                    string filePath = string.Format("\"{0}{1}{2}.exe\"", Directory.GetCurrentDirectory(), Path.DirectorySeparatorChar, filename);
+                    StreamReader sr = File.OpenText(xmlPath);
+                    string xmlContent = sr.ReadToEnd().Replace("{exe_path}", filePath);
+                    sr.Close();
+                    StreamWriter sw = File.CreateText(xmlPath);
+                    sw.Write(xmlContent);
+                    sw.Close();
+
+                    // Create a new task using existing xml description
+                    try
+                    {
+                        Process p = new Process();
+                        p.StartInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "schtasks.exe");
+                        p.StartInfo.Arguments = " /create /xml \"" + xmlPath + "\" /tn \"LenovoFanManagement\" -f";
+                        p.StartInfo.UseShellExecute = false;
+                        p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        p.StartInfo.CreateNoWindow = true;
+                        p.StartInfo.RedirectStandardOutput = true;
+                        p.Start();
+                        p.WaitForExit();
+                        p.Close();
+                    }catch (Exception)
+                    {
+                        // do nothing
+                    }
+                }
+            }
+            else
+            {
+                // Delete existing task
+                try
+                {
+                    Process p = new Process();
+                    p.StartInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "schtasks.exe");
+                    p.StartInfo.Arguments = " /delete /tn \"LenovoFanManagement\" -f";
+                    p.StartInfo.UseShellExecute = false;
+                    p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    p.StartInfo.CreateNoWindow = true;
+                    p.StartInfo.RedirectStandardOutput = true;
+                    p.Start();
+                    p.WaitForExit();
+                    p.Close();
+                }catch (Exception)
+                {
+                    // do nothing
+                }
+            }
+            /*
             RegistryKey _registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
             if (startupCheckBox.Checked)
             {
@@ -1022,6 +1103,7 @@ namespace DellFanManagement.App
                     _registryKey.DeleteValue(STARTUP_NAME);
             }
             _registryKey.Close();
+            */
         }
 
         /// <summary>

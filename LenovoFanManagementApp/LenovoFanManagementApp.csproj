@@ -70,6 +70,9 @@
 	 <None Update="WinRing0x64.sys">
        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	 </None>
+	 <None Update="task.xml">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	 </None>
 	 <None Update="Resources\Fan-Blue-1.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -913,7 +913,7 @@ namespace DellFanManagement.App
             this.startupCheckBox.Name = "startupCheckBox";
             this.startupCheckBox.Size = new System.Drawing.Size(185, 32);
             this.startupCheckBox.TabIndex = 8;
-            this.startupCheckBox.Text = "系统启动时运行";
+            this.startupCheckBox.Text = "添加到任务计划";
             this.startupCheckBox.UseVisualStyleBackColor = true;
             this.startupCheckBox.CheckedChanged += new System.EventHandler(this.animatedCheckBox_CheckedChanged);
             // 
