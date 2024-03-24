@@ -6,7 +6,7 @@ Windows Desktop App. to manage Lenovo Fan RPM special for Thinkpad E16 gen 1 ，
 
 This project is based on [ec_tpfan](https://github.com/simonchen/ec_tpfan)
 
-## 功能简述
+## 功能简述和使用方法
 
 ### 平滑模式
 
@@ -26,12 +26,12 @@ This project is based on [ec_tpfan](https://github.com/simonchen/ec_tpfan)
 - 高：风扇转速 4400 RPM
 - 最高速: 风扇转速 5700 RPM
 
-### 允许测试签名 (Ttest signing ON）
+### 允许测试签名 (test signing ON）
 LenovoFan.exe需要加载驱动程序，为防止不能正常加载，请执行下命命令，允许测试签名：
 ```
 bcdedit -set TESTSIGNING ON
 ```
-**注意：** BitLock如果打开，重启完重启后，将会问密钥进入！（**请预先备份BitLock密钥到u盘**）
+**注意：** BitLock如果打开，在系统重启后，将会问密钥进入！（**请预先备份BitLock密钥到u盘**）
 
 ### 添加到任务计划 (v1.1)
 v1.1版本及以后，推荐使用，一键打开/关闭。
