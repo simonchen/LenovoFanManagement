@@ -27,7 +27,7 @@ This project is based on [ec_tpfan](https://github.com/simonchen/ec_tpfan)
 - 最高速: 风扇转速 5700 RPM
 
 ### 允许测试签名 (Ttest signing ON）
-LenovoFan.exe需要加载驱动程序，为防上不能正常加载，请执行下命命令，允许测试签名：
+LenovoFan.exe需要加载驱动程序，为防止不能正常加载，请执行下命命令，允许测试签名：
 ```
 bcdedit -set TESTSIGNING ON
 ```
