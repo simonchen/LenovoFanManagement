@@ -6,7 +6,21 @@ Windows Desktop App. to manage Lenovo Fan RPM special for Thinkpad E16 gen 1 ，
 
 This project is based on [ec_tpfan](https://github.com/simonchen/ec_tpfan)
 
-## 功能简述和使用方法
+## V2.0
+### 新增
+高级选项：不检测GPU温度) | 隐藏桌面水印 (隐藏由于测试签名打开后在Windows桌面出现的水印警告）
+键盘管理：手动打开键盘背光，可按设定延迟关闭，按任意键再次自动打开背光
+电池充电（需预装Lenovo ACPI电源管理驱动，如不安装，仅”结束“选项生效)
+充许为当前电源计划设置最高CPU频率
+
+LenovoFanDaemon服务进程，自动监视重启主程序（间隔2秒）。
+
+### 改进
+温度上限开启高速延迟2秒，避免由于CPU在单核1秒内短暂迅速升温/降温（升频/降频）超过温度上限而引发频繁开启/关闭高速。
+支持高分辨率DPI显示字体（防止系统字体缩放带来的模糊）
+<hr />
+
+## 风扇转速控制方法
 
 ### 平滑模式 (推荐使用)
 
