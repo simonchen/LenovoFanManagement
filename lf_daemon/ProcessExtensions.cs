@@ -120,10 +120,12 @@ namespace heri16
 
         public static void log(string msg)
         {
+#if (DEBUG)
             string strAppPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "lt_daemon.log");
             FileStream fs = File.Open(strAppPath, FileMode.Append);
             fs.Write(System.Text.UTF8Encoding.UTF8.GetBytes(msg+"\r\n"));
             fs.Close();
+#endif
         }
         /// <devdoc>
         ///   Gets the user token from the currently active session. Application must be running within the context of the LocalSystem Account.
