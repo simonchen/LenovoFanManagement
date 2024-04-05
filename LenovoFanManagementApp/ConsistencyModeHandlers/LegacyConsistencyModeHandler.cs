@@ -27,7 +27,7 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
         static int cpu_cool_loops = 0;
         static int cpu_hot_loops = 0;
         const short CPU_COOL_DELAY = 5;
-
+        const short CPU_HOT_COUNT = 5;
         public override void RunConsistencyModeLogic()
         {
             if (_core.LowerTemperatureThreshold != null && _core.UpperTemperatureThreshold != null && _core.RpmThreshold != null)
@@ -75,6 +75,8 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
                     {
                         foreach (KeyValuePair<string, int> temperature in _state.Temperatures[component])
                         {
+                            //if (component == TemperatureComponent.CPU &&
+                            //    temperature.Key.ToLower().IndexOf("package") >= 0) continue; // Ignore CPU Package temperature
                             if (temperature.Value > _core.UpperTemperatureThreshold) //(_state.EcFanControlEnabled ?: _core.LowerTemperatureThreshold : _core.UpperTemperatureThreshold))
                             {
                                 _state.ConsistencyModeStatus = string.Format("等待{0}温度下降", component);// Waiting for {0} temperature to fall", component);
@@ -140,9 +142,16 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
                         else
                         {
                             LegacyConsistencyModeHandler.cpu_hot_loops += 1;
-                            if (LegacyConsistencyModeHandler.cpu_hot_loops > 10)
-                                LegacyConsistencyModeHandler.cpu_hot_loops = 10;
-                            _fanController.SetFanLevel(FanLevel.SuperHigh, FanIndex.AllFans);
+                            if (LegacyConsistencyModeHandler.cpu_hot_loops > CPU_HOT_COUNT)
+                                LegacyConsistencyModeHandler.cpu_hot_loops = CPU_HOT_COUNT;
+                            if (LegacyConsistencyModeHandler.cpu_hot_loops > 2) // Avoiding occasional hot in one second.
+                            {
+                                _fanController.SetFanLevel(FanLevel.SuperHigh, FanIndex.AllFans);
+                            }
+                            else
+                            {
+                                _fanController.EnableAutomaticFanControl();
+                            }
                         }
                     }
                 }
@@ -236,9 +245,20 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
                             else
                             {
                                 if (!is_cpu_too_hot && LegacyConsistencyModeHandler.cpu_hot_loops <= 0)
+                                {
                                     _fanController.EnableAutomaticFanControl();
+                                }
                                 else
-                                    _fanController.SetFanLevel(FanLevel.SuperHigh, FanIndex.AllFans);
+                                {
+                                    if (LegacyConsistencyModeHandler.cpu_hot_loops > 2) // Avoiding occasional hot in one second.
+                                    {
+                                        _fanController.SetFanLevel(FanLevel.SuperHigh, FanIndex.AllFans);
+                                    }
+                                    else
+                                    {
+                                        _fanController.EnableAutomaticFanControl();
+                                    }
+                                }
                             }
                             _state.ConsistencyModeStatus = "温度低于下限，等待减小风速";
                             _core.TrayIconColor = TrayIconColor.Blue;
@@ -275,9 +295,20 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
                     else
                     {
                         if (!is_cpu_too_hot && LegacyConsistencyModeHandler.cpu_hot_loops <= 0)
+                        {
                             _fanController.EnableAutomaticFanControl();
+                        }
                         else
-                            _fanController.SetFanLevel(FanLevel.SuperHigh, FanIndex.AllFans);
+                        {
+                            if (LegacyConsistencyModeHandler.cpu_hot_loops > 2) // Avoiding occasional hot in one second.
+                            {
+                                _fanController.SetFanLevel(FanLevel.SuperHigh, FanIndex.AllFans);
+                            }
+                            else
+                            {
+                                _fanController.EnableAutomaticFanControl();
+                            }
+                        }
                     }
                     Log.Write(string.Format("Enabled EC fan control – consistency mode – {0}", _state.ConsistencyModeStatus));
                     _core.TrayIconColor = TrayIconColor.Red;

@@ -35,6 +35,8 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
+	<DebugType>none</DebugType>
+	<DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -46,29 +48,43 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.3" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+    <PackageReference Include="MouseKeyHook" Version="5.7.1" />
     <PackageReference Include="NvAPIWrapper.Net" Version="0.8.1.101" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="7.0.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LenovoSmbiosBzhLib\LenovoSmbiosBzhLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="irrKlang.NET4">
       <HintPath>Libraries\irrKlang.NET4.dll</HintPath>
     </Reference>
-    <Reference Include="LenovoSmbiosBzhLib">
-      <HintPath>..\LenovoSmbiosBzhLib\bin\Debug\LenovoSmbiosBzhLib.dll</HintPath>
+	<Reference Include="LenovoSmbiosBzhLib">
+		<HintPath>..\LenovoSmbiosBzhLib\bin\Release\LenovoSmbiosBzhLib.dll</HintPath>
+	</Reference>
+	<Reference Include="LenovoSmbiosSmiLib">
+		<HintPath>..\LenovoSmbiosSmiLib\bin\Release\LenovoSmbiosSmiLib.dll</HintPath>
+	</Reference>
+    <Reference Include="LibreHardwareMonitorLib">
+      <HintPath>..\bin\Release\LibreHardwareMonitorLib.dll</HintPath>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
-    <Reference Include="LenovoSmbiosSmiLib">
-      <HintPath>..\LenovoSmbiosSmiLib\bin\Debug\LenovoSmbiosSmiLib.dll</HintPath>
+    <Reference Include="PowerManagerAPI">
+      <HintPath>..\bin\Release\PowerManagerAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
 	 <None Update="WinRing0x64.sys">
        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	 </None>
+	 <None Update="painter_x64.dll">
+	   <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>  
 	 </None>
 	 <None Update="task.xml">
        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

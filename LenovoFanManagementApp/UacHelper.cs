@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.Windows.Forms;
 
 namespace DellFanManagement.App
 {
@@ -77,6 +78,15 @@ namespace DellFanManagement.App
             return result;
         }
 
+        public static bool IsSystemProcess()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new(identity);
+            if (identity.IsSystem)
+                return true;
+
+            return false;
+        }
         public static bool IsProcessElevated()
         {
             if (IsUacEnabled())
@@ -129,6 +139,7 @@ namespace DellFanManagement.App
                 WindowsIdentity identity = WindowsIdentity.GetCurrent();
                 WindowsPrincipal principal = new(identity);
                 bool result = principal.IsInRole(WindowsBuiltInRole.Administrator) || principal.IsInRole(0x200); // 0x200 = Domain Administrator
+                MessageBox.Show(string.Format("RESULT={0}",result));
                 return result;
             }
         }

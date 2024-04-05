@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "lf_daemon": {
+      "commandName": "Project",
+      "commandLineArgs": "LenovoFan.exe"
+    }
+  }
+}

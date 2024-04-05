@@ -21,7 +21,7 @@ namespace DellFanManagement.DellSmbiozBzhLib
         /// <summary>
         /// Internal name of the SMM I/O driver/service.
         /// </summary>
-        private const string DriverName = "WinRing0_1_2_0";
+        private const string DriverName = "WinRing0_9_9_9";
 
         /// <summary>
         /// Path to use when opening a handle to the driver.

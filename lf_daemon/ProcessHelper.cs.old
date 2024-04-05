@@ -1,0 +1,261 @@
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Text;
+
+public class ProcessHelper
+{
+    [DllImport("advapi32.dll", SetLastError = true)]
+    public static extern bool DuplicateTokenEx(
+        IntPtr hExistingToken,
+        uint dwDesiredAccess,
+        IntPtr lpTokenAttributes,
+        int ImpersonationLevel,
+        int TokenType,
+        out IntPtr phNewToken
+    );
+
+    [DllImport("wtsapi32.dll", SetLastError = true)]
+    public static extern uint WTSGetActiveConsoleSessionId();
+
+    [DllImport("advapi32.dll", SetLastError = true)]
+    public static extern bool SetTokenInformation(
+        IntPtr TokenHandle,
+        int TokenInformationClass,
+        ref uint TokenInformation,
+        int TokenInformationLength
+    );
+
+    [DllImport("userenv.dll", SetLastError = true)]
+    public static extern bool CreateEnvironmentBlock(
+        out IntPtr lpEnvironment,
+        IntPtr hToken,
+        bool bInherit
+    );
+
+    [DllImport("userenv.dll", SetLastError = true)]
+    public static extern bool DestroyEnvironmentBlock(
+        IntPtr lpEnvironment
+    );
+
+    [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    public static extern bool CreateProcessAsUser(
+        IntPtr hToken,
+        string lpApplicationName,
+        StringBuilder lpCommandLine,
+        IntPtr lpProcessAttributes,
+        IntPtr lpThreadAttributes,
+        bool bInheritHandles,
+        uint dwCreationFlags,
+        IntPtr lpEnvironment,
+        string lpCurrentDirectory,
+        ref STARTUPINFO lpStartupInfo,
+        out PROCESS_INFORMATION lpProcessInformation
+    );
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool CloseHandle(
+        IntPtr hObject
+    );
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool ProcessIdToSessionId(
+        uint dwProcessId,
+        out uint pSessionId
+    );
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        uint dwProcessId
+    );
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool OpenProcessToken(
+        IntPtr ProcessHandle,
+        uint DesiredAccess,
+        out IntPtr TokenHandle
+    );
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern IntPtr CreateToolhelp32Snapshot(
+        uint dwFlags,
+        uint th32ProcessID
+    );
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool Process32First(
+        IntPtr hSnapshot,
+        ref PROCESSENTRY32 lppe
+    );
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool Process32Next(
+        IntPtr hSnapshot,
+        ref PROCESSENTRY32 lppe
+    );
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct STARTUPINFO
+    {
+        public int cb;
+        public string lpReserved;
+        public string lpDesktop;
+        public string lpTitle;
+        public uint dwX;
+        public uint dwY;
+        public uint dwXSize;
+        public uint dwYSize;
+        public uint dwXCountChars;
+        public uint dwYCountChars;
+        public uint dwFillAttribute;
+        public uint dwFlags;
+        public short wShowWindow;
+        public short cbReserved2;
+        public IntPtr lpReserved2;
+        public IntPtr hStdInput;
+        public IntPtr hStdOutput;
+        public IntPtr hStdError;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PROCESS_INFORMATION
+    {
+        public IntPtr hProcess;
+        public IntPtr hThread;
+        public uint dwProcessId;
+        public uint dwThreadId;
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct PROCESSENTRY32
+    {
+        public uint dwSize;
+        public uint cntUsage;
+        public uint th32ProcessID;
+        public IntPtr th32DefaultHeapID;
+        public uint th32ModuleID;
+        public uint cntThreads;
+        public uint th32ParentProcessID;
+        public int pcPriClassBase;
+        public uint dwFlags;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+        public string szExeFile;
+    }
+
+    public const int MAXIMUM_ALLOWED = 0x2000000;
+    public const int SecurityIdentification = 1;
+    public const int TokenPrimary = 1;
+    public const int STARTF_USESHOWWINDOW = 0x00000001;
+    public const short HIDE_WINDOW = 0;
+    public const uint NORMAL_PRIORITY_CLASS = 0x00000020;
+    public const uint CREATE_NEW_CONSOLE = 0x00000010;
+    public const uint CREATE_UNICODE_ENVIRONMENT = 0x00000400;
+    public const uint PROCESS_QUERY_INFORMATION = 0x00000400;
+    public const uint TOKEN_ALL_ACCESS = 0x000F01FF;
+    public const uint TH32CS_SNAPPROCESS = 0x00000002;
+
+    public static bool MyCreateProcessAsUser(IntPtr hCurrentToken, string strPath, StringBuilder lpCmdLine)
+    {
+        IntPtr hTokenDup = IntPtr.Zero;
+        if (!DuplicateTokenEx(hCurrentToken, MAXIMUM_ALLOWED, IntPtr.Zero, SecurityIdentification, TokenPrimary, out hTokenDup))
+        {
+            #if _DEBUG
+            int iError = Marshal.GetLastWin32Error();
+            string strLog = string.Format("DuplicateTokenEx fail, Error code: {0}", iError);
+            Debug.WriteLine(strLog);
+            #endif
+            return false;
+        }
+        uint dwSessionID = WTSGetActiveConsoleSessionId();
+        if (!SetTokenInformation(hTokenDup, TokenSessionId, ref dwSessionID, sizeof(uint)))
+        {
+            SafeCloseHandle(hTokenDup);
+            return false;
+        }
+        STARTUPINFO si = new STARTUPINFO();
+        PROCESS_INFORMATION pi = new PROCESS_INFORMATION();
+        si.cb = Marshal.SizeOf(si);
+        si.lpDesktop = "WinSta0\\Default";
+        si.dwFlags = STARTF_USESHOWWINDOW;
+        si.wShowWindow = HIDE_WINDOW;
+        IntPtr pEnv = IntPtr.Zero;
+        uint dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE | CREATE_UNICODE_ENVIRONMENT;
+        if (!CreateEnvironmentBlock(out pEnv, hTokenDup, false))
+        {
+            SafeCloseHandle(hTokenDup);
+            return false;
+        }
+        if (!CreateProcessAsUser(hTokenDup, strPath, lpCmdLine, IntPtr.Zero, IntPtr.Zero, false, dwCreationFlags, pEnv, null, ref si, out pi))
+        {
+            SafeCloseHandle(hTokenDup);
+            if (pEnv != IntPtr.Zero)
+                DestroyEnvironmentBlock(pEnv);
+            return false;
+        }
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        CloseHandle(hTokenDup);
+        if (pEnv != IntPtr.Zero)
+            DestroyEnvironmentBlock(pEnv);
+        return true;
+    }
+
+    public static bool GetCurrentLogonUserToken(out IntPtr hToken)
+    {
+        uint dwCurSessionId = WTSGetActiveConsoleSessionId();
+        if (WTSQueryUserToken(dwCurSessionId, out hToken) == true)
+            return true;
+        uint err = (uint)Marshal.GetLastWin32Error();
+        bool bRet = false;
+        IntPtr hProcessSnap = IntPtr.Zero;
+        PROCESSENTRY32 pe32 = new PROCESSENTRY32();
+        uint dwSessionId = 0xFFFFFFFF;
+        hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        if (hProcessSnap == IntPtr.Zero)
+        {
+            return false;
+        }
+        pe32.dwSize = (uint)Marshal.SizeOf(pe32);
+        if (Process32First(hProcessSnap, ref pe32))
+        {
+            do
+            {
+                if (string.Equals(pe32.szExeFile, "explorer.exe", StringComparison.OrdinalIgnoreCase))
+                {
+                    ProcessIdToSessionId(pe32.th32ProcessID, out dwSessionId);
+                    if (dwSessionId != dwCurSessionId)
+                        continue;
+
+                    IntPtr hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, false, pe32.th32ProcessID);
+                    uint err = (uint)Marshal.GetLastWin32Error();
+                    bRet = OpenProcessToken(hProcess, TOKEN_ALL_ACCESS, out hToken);
+                    if (bRet == false)
+                    {
+                    }
+                    CloseHandle(hProcessSnap);
+                    return true;
+
+                }
+            } while (Process32Next(hProcessSnap, ref pe32));
+            bRet = true;
+        }
+        else
+        {
+            bRet = false;
+        }
+        CloseHandle(hProcessSnap);
+        return bRet;
+    }
+
+    public static void SafeCloseHandle(IntPtr handle)
+    {
+        if (handle != IntPtr.Zero)
+        {
+            CloseHandle(handle);
+        }
+    }
+}
+

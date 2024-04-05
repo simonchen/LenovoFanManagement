@@ -22,6 +22,7 @@ namespace DellFanManagement.App
         static int Main(string[] args)
         {
             bool createdNew;
+            ///Thread.Sleep(2000); // For restarting self purpose!
             Mutex m = new Mutex(true, "LenovoFanManagementApp", out createdNew);
             if (!createdNew)
             {
@@ -38,7 +39,7 @@ namespace DellFanManagement.App
                 // GUI mode.
                 try
                 {
-                    if (UacHelper.IsProcessElevated())
+                    if (UacHelper.IsProcessElevated() || UacHelper.IsSystemProcess())
                     {
                         // Looks like we're ready to start up the GUI app.
                         // Set process priority to high.
@@ -52,7 +53,7 @@ namespace DellFanManagement.App
                     }
                     else
                     {
-                        MessageBox.Show("This program must be run with administrative privileges.", "Dell Fan Management privilege check", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("程序需要在管理员权限下运行！\r\nThis program must be run with administrative privileges.", "Lenovo Fan Management privilege check", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception exception)
@@ -75,7 +76,7 @@ namespace DellFanManagement.App
                     Console.WriteLine("Source code available at https://github.com/AaronKelley/DellFanManagement");
                     Console.WriteLine();
 
-                    if (UacHelper.IsProcessElevated())
+                    if (UacHelper.IsProcessElevated() || UacHelper.IsSystemProcess())
                     {
                         if (args[0].ToLower() == "packagetest")
                         {

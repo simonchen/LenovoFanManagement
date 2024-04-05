@@ -376,6 +376,9 @@ namespace DellFanManagement.App
                     Log.Write("Enabled EC fan control – shutdown");
                 }
 
+                // Clean resources in State 
+                _state.Dispose(); 
+
                 // Clean up as the program terminates.
                 _fanController.Shutdown();
             }

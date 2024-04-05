@@ -34,11 +34,6 @@ namespace DellFanManagement.App
             this.fansGroupBox = new System.Windows.Forms.GroupBox();
             this.fan2RpmLabel = new System.Windows.Forms.Label();
             this.fan1RpmLabel = new System.Windows.Forms.Label();
-            this.thermalSettingGroupBox = new System.Windows.Forms.GroupBox();
-            this.thermalSettingRadioButtonPerformance = new System.Windows.Forms.RadioButton();
-            this.thermalSettingRadioButtonQuiet = new System.Windows.Forms.RadioButton();
-            this.thermalSettingRadioButtonCool = new System.Windows.Forms.RadioButton();
-            this.thermalSettingRadioButtonOptimized = new System.Windows.Forms.RadioButton();
             this.temperatureGroupBox = new System.Windows.Forms.GroupBox();
             this.temperatureLabel18 = new System.Windows.Forms.Label();
             this.temperatureLabel17 = new System.Windows.Forms.Label();
@@ -99,11 +94,33 @@ namespace DellFanManagement.App
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.consistencyModeStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.trayIconCheckBox = new System.Windows.Forms.CheckBox();
+            this.gpuTCheckBox = new System.Windows.Forms.CheckBox();
             this.animatedCheckBox = new System.Windows.Forms.CheckBox();
             this.startupCheckBox = new System.Windows.Forms.CheckBox();
+            this.trayIconCheckBox = new System.Windows.Forms.CheckBox();
+            this.hideWatermarkCheckBox = new System.Windows.Forms.CheckBox();
+            this.bkgLightGroupBox = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.bkgLightDelay = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.allowBacklightCheckBox = new System.Windows.Forms.CheckBox();
+            this.batteryChargeGroupBox = new System.Windows.Forms.GroupBox();
+            this.batteryChargeLabel = new System.Windows.Forms.Label();
+            this.chargeStartThresholdComboBox = new System.Windows.Forms.ComboBox();
+            this.chargeStopThresholdComboBox = new System.Windows.Forms.ComboBox();
+            this.chargeStopControlCheckBox = new System.Windows.Forms.CheckBox();
+            this.chargeStartControlCheckBox = new System.Windows.Forms.CheckBox();
+            this.limitFrequencyGroupBox = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.DCCpuFreqTextBox = new System.Windows.Forms.TextBox();
+            this.ACLabel = new System.Windows.Forms.Label();
+            this.ACCpuFreqTextBox = new System.Windows.Forms.TextBox();
+            this.ApplyCpuFreqButton = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.AdvancedGroupBox = new System.Windows.Forms.GroupBox();
             this.fansGroupBox.SuspendLayout();
-            this.thermalSettingGroupBox.SuspendLayout();
             this.temperatureGroupBox.SuspendLayout();
             this.operationModeGroupBox.SuspendLayout();
             this.manualGroupBox.SuspendLayout();
@@ -114,6 +131,10 @@ namespace DellFanManagement.App
             this.aboutGroupBox.SuspendLayout();
             this.audioKeepAliveGroupBox.SuspendLayout();
             this.statusStrip.SuspendLayout();
+            this.bkgLightGroupBox.SuspendLayout();
+            this.batteryChargeGroupBox.SuspendLayout();
+            this.limitFrequencyGroupBox.SuspendLayout();
+            this.AdvancedGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // fansGroupBox
@@ -148,65 +169,6 @@ namespace DellFanManagement.App
             this.fan1RpmLabel.Size = new System.Drawing.Size(295, 28);
             this.fan1RpmLabel.TabIndex = 1;
             this.fan1RpmLabel.Text = "风扇 1 RPM: (Not measured)";
-            // 
-            // thermalSettingGroupBox
-            // 
-            this.thermalSettingGroupBox.Controls.Add(this.thermalSettingRadioButtonPerformance);
-            this.thermalSettingGroupBox.Controls.Add(this.thermalSettingRadioButtonQuiet);
-            this.thermalSettingGroupBox.Controls.Add(this.thermalSettingRadioButtonCool);
-            this.thermalSettingGroupBox.Controls.Add(this.thermalSettingRadioButtonOptimized);
-            this.thermalSettingGroupBox.Location = new System.Drawing.Point(612, 205);
-            this.thermalSettingGroupBox.Margin = new System.Windows.Forms.Padding(5);
-            this.thermalSettingGroupBox.Name = "thermalSettingGroupBox";
-            this.thermalSettingGroupBox.Padding = new System.Windows.Forms.Padding(5);
-            this.thermalSettingGroupBox.Size = new System.Drawing.Size(229, 217);
-            this.thermalSettingGroupBox.TabIndex = 6;
-            this.thermalSettingGroupBox.TabStop = false;
-            this.thermalSettingGroupBox.Text = "热度调节:";
-            // 
-            // thermalSettingRadioButtonPerformance
-            // 
-            this.thermalSettingRadioButtonPerformance.Location = new System.Drawing.Point(10, 170);
-            this.thermalSettingRadioButtonPerformance.Margin = new System.Windows.Forms.Padding(5);
-            this.thermalSettingRadioButtonPerformance.Name = "thermalSettingRadioButtonPerformance";
-            this.thermalSettingRadioButtonPerformance.Size = new System.Drawing.Size(148, 33);
-            this.thermalSettingRadioButtonPerformance.TabIndex = 3;
-            this.thermalSettingRadioButtonPerformance.TabStop = true;
-            this.thermalSettingRadioButtonPerformance.Text = "最佳性能";
-            this.thermalSettingRadioButtonPerformance.UseVisualStyleBackColor = true;
-            // 
-            // thermalSettingRadioButtonQuiet
-            // 
-            this.thermalSettingRadioButtonQuiet.Location = new System.Drawing.Point(10, 126);
-            this.thermalSettingRadioButtonQuiet.Margin = new System.Windows.Forms.Padding(5);
-            this.thermalSettingRadioButtonQuiet.Name = "thermalSettingRadioButtonQuiet";
-            this.thermalSettingRadioButtonQuiet.Size = new System.Drawing.Size(209, 33);
-            this.thermalSettingRadioButtonQuiet.TabIndex = 2;
-            this.thermalSettingRadioButtonQuiet.TabStop = true;
-            this.thermalSettingRadioButtonQuiet.Text = "安静 (无cpu睿频)";
-            this.thermalSettingRadioButtonQuiet.UseVisualStyleBackColor = true;
-            // 
-            // thermalSettingRadioButtonCool
-            // 
-            this.thermalSettingRadioButtonCool.Location = new System.Drawing.Point(10, 82);
-            this.thermalSettingRadioButtonCool.Margin = new System.Windows.Forms.Padding(5);
-            this.thermalSettingRadioButtonCool.Name = "thermalSettingRadioButtonCool";
-            this.thermalSettingRadioButtonCool.Size = new System.Drawing.Size(209, 33);
-            this.thermalSettingRadioButtonCool.TabIndex = 1;
-            this.thermalSettingRadioButtonCool.TabStop = true;
-            this.thermalSettingRadioButtonCool.Text = "清凉 (风噪大)";
-            this.thermalSettingRadioButtonCool.UseVisualStyleBackColor = true;
-            // 
-            // thermalSettingRadioButtonOptimized
-            // 
-            this.thermalSettingRadioButtonOptimized.Location = new System.Drawing.Point(10, 38);
-            this.thermalSettingRadioButtonOptimized.Margin = new System.Windows.Forms.Padding(5);
-            this.thermalSettingRadioButtonOptimized.Name = "thermalSettingRadioButtonOptimized";
-            this.thermalSettingRadioButtonOptimized.Size = new System.Drawing.Size(148, 33);
-            this.thermalSettingRadioButtonOptimized.TabIndex = 0;
-            this.thermalSettingRadioButtonOptimized.TabStop = true;
-            this.thermalSettingRadioButtonOptimized.Text = "平衡优化";
-            this.thermalSettingRadioButtonOptimized.UseVisualStyleBackColor = true;
             // 
             // temperatureGroupBox
             // 
@@ -543,7 +505,7 @@ namespace DellFanManagement.App
             // 
             // manualFan1RadioButtonHighest
             // 
-            this.manualFan1RadioButtonHighest.Location = new System.Drawing.Point(11, 125);
+            this.manualFan1RadioButtonHighest.Location = new System.Drawing.Point(10, 125);
             this.manualFan1RadioButtonHighest.Margin = new System.Windows.Forms.Padding(5);
             this.manualFan1RadioButtonHighest.Name = "manualFan1RadioButtonHighest";
             this.manualFan1RadioButtonHighest.Size = new System.Drawing.Size(130, 33);
@@ -576,7 +538,7 @@ namespace DellFanManagement.App
             // 
             // manualFan1RadioButtonMedium
             // 
-            this.manualFan1RadioButtonMedium.Location = new System.Drawing.Point(11, 81);
+            this.manualFan1RadioButtonMedium.Location = new System.Drawing.Point(10, 80);
             this.manualFan1RadioButtonMedium.Margin = new System.Windows.Forms.Padding(5);
             this.manualFan1RadioButtonMedium.Name = "manualFan1RadioButtonMedium";
             this.manualFan1RadioButtonMedium.Size = new System.Drawing.Size(59, 33);
@@ -859,7 +821,7 @@ namespace DellFanManagement.App
             this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.consistencyModeStatusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 509);
+            this.statusStrip.Location = new System.Drawing.Point(0, 651);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 24, 0);
             this.statusStrip.Size = new System.Drawing.Size(1252, 37);
@@ -876,57 +838,343 @@ namespace DellFanManagement.App
             // 
             this.trayIcon.Text = "Dell Fan Management";
             // 
-            // trayIconCheckBox
+            // gpuTCheckBox
             // 
-            this.trayIconCheckBox.AutoSize = true;
-            this.trayIconCheckBox.Checked = true;
-            this.trayIconCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.trayIconCheckBox.Location = new System.Drawing.Point(623, 430);
-            this.trayIconCheckBox.Margin = new System.Windows.Forms.Padding(5);
-            this.trayIconCheckBox.Name = "trayIconCheckBox";
-            this.trayIconCheckBox.Size = new System.Drawing.Size(143, 32);
-            this.trayIconCheckBox.TabIndex = 7;
-            this.trayIconCheckBox.Text = "任务栏图标";
-            this.trayIconCheckBox.UseVisualStyleBackColor = true;
+            this.gpuTCheckBox.Checked = true;
+            this.gpuTCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gpuTCheckBox.Location = new System.Drawing.Point(12, 41);
+            this.gpuTCheckBox.Margin = new System.Windows.Forms.Padding(5);
+            this.gpuTCheckBox.Name = "gpuTCheckBox";
+            this.gpuTCheckBox.Size = new System.Drawing.Size(208, 32);
+            this.gpuTCheckBox.TabIndex = 14;
+            this.gpuTCheckBox.Text = "不检测GPU温度";
+            this.gpuTCheckBox.UseVisualStyleBackColor = true;
             // 
             // animatedCheckBox
             // 
-            this.animatedCheckBox.AutoSize = true;
             this.animatedCheckBox.Checked = true;
             this.animatedCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.animatedCheckBox.Location = new System.Drawing.Point(776, 430);
+            this.animatedCheckBox.Location = new System.Drawing.Point(12, 209);
             this.animatedCheckBox.Margin = new System.Windows.Forms.Padding(5);
             this.animatedCheckBox.Name = "animatedCheckBox";
-            this.animatedCheckBox.Size = new System.Drawing.Size(80, 32);
-            this.animatedCheckBox.TabIndex = 8;
+            this.animatedCheckBox.Size = new System.Drawing.Size(103, 32);
+            this.animatedCheckBox.TabIndex = 17;
             this.animatedCheckBox.Text = "动画";
             this.animatedCheckBox.UseVisualStyleBackColor = true;
-            this.animatedCheckBox.CheckedChanged += new System.EventHandler(this.animatedCheckBox_CheckedChanged);
             // 
             // startupCheckBox
             // 
-            this.startupCheckBox.AutoSize = true;
             this.startupCheckBox.Checked = true;
             this.startupCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.startupCheckBox.Location = new System.Drawing.Point(623, 465);
+            this.startupCheckBox.Location = new System.Drawing.Point(12, 125);
             this.startupCheckBox.Margin = new System.Windows.Forms.Padding(5);
             this.startupCheckBox.Name = "startupCheckBox";
-            this.startupCheckBox.Size = new System.Drawing.Size(185, 32);
-            this.startupCheckBox.TabIndex = 8;
+            this.startupCheckBox.Size = new System.Drawing.Size(208, 32);
+            this.startupCheckBox.TabIndex = 18;
             this.startupCheckBox.Text = "添加到任务计划";
             this.startupCheckBox.UseVisualStyleBackColor = true;
-            this.startupCheckBox.CheckedChanged += new System.EventHandler(this.animatedCheckBox_CheckedChanged);
+            // 
+            // trayIconCheckBox
+            // 
+            this.trayIconCheckBox.Checked = true;
+            this.trayIconCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.trayIconCheckBox.Location = new System.Drawing.Point(12, 167);
+            this.trayIconCheckBox.Margin = new System.Windows.Forms.Padding(5);
+            this.trayIconCheckBox.Name = "trayIconCheckBox";
+            this.trayIconCheckBox.Size = new System.Drawing.Size(175, 32);
+            this.trayIconCheckBox.TabIndex = 15;
+            this.trayIconCheckBox.Text = "任务栏图标";
+            this.trayIconCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // hideWatermarkCheckBox
+            // 
+            this.hideWatermarkCheckBox.Checked = true;
+            this.hideWatermarkCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.hideWatermarkCheckBox.Location = new System.Drawing.Point(12, 83);
+            this.hideWatermarkCheckBox.Margin = new System.Windows.Forms.Padding(5);
+            this.hideWatermarkCheckBox.Name = "hideWatermarkCheckBox";
+            this.hideWatermarkCheckBox.Size = new System.Drawing.Size(184, 32);
+            this.hideWatermarkCheckBox.TabIndex = 16;
+            this.hideWatermarkCheckBox.Text = "隐藏桌面水印";
+            this.hideWatermarkCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // bkgLightGroupBox
+            // 
+            this.bkgLightGroupBox.Controls.Add(this.label4);
+            this.bkgLightGroupBox.Controls.Add(this.bkgLightDelay);
+            this.bkgLightGroupBox.Controls.Add(this.label3);
+            this.bkgLightGroupBox.Controls.Add(this.allowBacklightCheckBox);
+            this.bkgLightGroupBox.Location = new System.Drawing.Point(21, 502);
+            this.bkgLightGroupBox.Name = "bkgLightGroupBox";
+            this.bkgLightGroupBox.Size = new System.Drawing.Size(238, 98);
+            this.bkgLightGroupBox.TabIndex = 19;
+            this.bkgLightGroupBox.TabStop = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(26, 50);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(54, 28);
+            this.label4.TabIndex = 18;
+            this.label4.Text = "延迟";
+            this.label4.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // bkgLightDelay
+            // 
+            this.bkgLightDelay.Location = new System.Drawing.Point(89, 44);
+            this.bkgLightDelay.Margin = new System.Windows.Forms.Padding(5);
+            this.bkgLightDelay.MaxLength = 2;
+            this.bkgLightDelay.Name = "bkgLightDelay";
+            this.bkgLightDelay.Size = new System.Drawing.Size(51, 34);
+            this.bkgLightDelay.TabIndex = 16;
+            this.bkgLightDelay.Text = "5";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(149, 50);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(33, 28);
+            this.label3.TabIndex = 17;
+            this.label3.Text = "秒";
+            // 
+            // allowBacklightCheckBox
+            // 
+            this.allowBacklightCheckBox.Checked = true;
+            this.allowBacklightCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.allowBacklightCheckBox.Location = new System.Drawing.Point(15, 0);
+            this.allowBacklightCheckBox.Margin = new System.Windows.Forms.Padding(5);
+            this.allowBacklightCheckBox.Name = "allowBacklightCheckBox";
+            this.allowBacklightCheckBox.Size = new System.Drawing.Size(221, 32);
+            this.allowBacklightCheckBox.TabIndex = 17;
+            this.allowBacklightCheckBox.Text = "键盘背光自动关闭";
+            this.allowBacklightCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // batteryChargeGroupBox
+            // 
+            this.batteryChargeGroupBox.Controls.Add(this.batteryChargeLabel);
+            this.batteryChargeGroupBox.Controls.Add(this.chargeStartThresholdComboBox);
+            this.batteryChargeGroupBox.Controls.Add(this.chargeStopThresholdComboBox);
+            this.batteryChargeGroupBox.Controls.Add(this.chargeStopControlCheckBox);
+            this.batteryChargeGroupBox.Controls.Add(this.chargeStartControlCheckBox);
+            this.batteryChargeGroupBox.Location = new System.Drawing.Point(265, 502);
+            this.batteryChargeGroupBox.Name = "batteryChargeGroupBox";
+            this.batteryChargeGroupBox.Size = new System.Drawing.Size(280, 137);
+            this.batteryChargeGroupBox.TabIndex = 19;
+            this.batteryChargeGroupBox.TabStop = false;
+            // 
+            // batteryChargeLabel
+            // 
+            this.batteryChargeLabel.AutoSize = true;
+            this.batteryChargeLabel.Location = new System.Drawing.Point(10, 0);
+            this.batteryChargeLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.batteryChargeLabel.Name = "batteryChargeLabel";
+            this.batteryChargeLabel.Size = new System.Drawing.Size(96, 28);
+            this.batteryChargeLabel.TabIndex = 18;
+            this.batteryChargeLabel.Text = "电池充电";
+            this.batteryChargeLabel.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // chargeStartThresholdComboBox
+            // 
+            this.chargeStartThresholdComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.chargeStartThresholdComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.chargeStartThresholdComboBox.FormattingEnabled = true;
+            this.chargeStartThresholdComboBox.IntegralHeight = false;
+            this.chargeStartThresholdComboBox.Items.AddRange(new object[] {
+            "100%",
+            "95%",
+            "90%",
+            "85%",
+            "80%",
+            "75%",
+            "70%",
+            "65%",
+            "60%",
+            "55%",
+            "50%",
+            "45%",
+            "40%"});
+            this.chargeStartThresholdComboBox.Location = new System.Drawing.Point(105, 35);
+            this.chargeStartThresholdComboBox.Name = "chargeStartThresholdComboBox";
+            this.chargeStartThresholdComboBox.Size = new System.Drawing.Size(149, 35);
+            this.chargeStartThresholdComboBox.TabIndex = 0;
+            // 
+            // chargeStopThresholdComboBox
+            // 
+            this.chargeStopThresholdComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.chargeStopThresholdComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.chargeStopThresholdComboBox.FormattingEnabled = true;
+            this.chargeStopThresholdComboBox.IntegralHeight = false;
+            this.chargeStopThresholdComboBox.Items.AddRange(new object[] {
+            "100%",
+            "95%",
+            "90%",
+            "85%",
+            "80%",
+            "75%",
+            "70%",
+            "65%",
+            "60%",
+            "55%",
+            "50%",
+            "45%",
+            "40%"});
+            this.chargeStopThresholdComboBox.Location = new System.Drawing.Point(105, 84);
+            this.chargeStopThresholdComboBox.Name = "chargeStopThresholdComboBox";
+            this.chargeStopThresholdComboBox.Size = new System.Drawing.Size(149, 35);
+            this.chargeStopThresholdComboBox.TabIndex = 0;
+            // 
+            // chargeStopControlCheckBox
+            // 
+            this.chargeStopControlCheckBox.AutoSize = true;
+            this.chargeStopControlCheckBox.Checked = true;
+            this.chargeStopControlCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chargeStopControlCheckBox.Location = new System.Drawing.Point(17, 84);
+            this.chargeStopControlCheckBox.Margin = new System.Windows.Forms.Padding(5);
+            this.chargeStopControlCheckBox.Name = "chargeStopControlCheckBox";
+            this.chargeStopControlCheckBox.Size = new System.Drawing.Size(80, 32);
+            this.chargeStopControlCheckBox.TabIndex = 17;
+            this.chargeStopControlCheckBox.Text = "结束";
+            this.chargeStopControlCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // chargeStartControlCheckBox
+            // 
+            this.chargeStartControlCheckBox.AutoSize = true;
+            this.chargeStartControlCheckBox.Checked = true;
+            this.chargeStartControlCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chargeStartControlCheckBox.Location = new System.Drawing.Point(17, 35);
+            this.chargeStartControlCheckBox.Margin = new System.Windows.Forms.Padding(5);
+            this.chargeStartControlCheckBox.Name = "chargeStartControlCheckBox";
+            this.chargeStartControlCheckBox.Size = new System.Drawing.Size(80, 32);
+            this.chargeStartControlCheckBox.TabIndex = 17;
+            this.chargeStartControlCheckBox.Text = "开始";
+            this.chargeStartControlCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // limitFrequencyGroupBox
+            // 
+            this.limitFrequencyGroupBox.Controls.Add(this.label5);
+            this.limitFrequencyGroupBox.Controls.Add(this.label7);
+            this.limitFrequencyGroupBox.Controls.Add(this.label6);
+            this.limitFrequencyGroupBox.Controls.Add(this.DCCpuFreqTextBox);
+            this.limitFrequencyGroupBox.Controls.Add(this.ACLabel);
+            this.limitFrequencyGroupBox.Controls.Add(this.ACCpuFreqTextBox);
+            this.limitFrequencyGroupBox.Controls.Add(this.ApplyCpuFreqButton);
+            this.limitFrequencyGroupBox.Location = new System.Drawing.Point(551, 502);
+            this.limitFrequencyGroupBox.Name = "limitFrequencyGroupBox";
+            this.limitFrequencyGroupBox.Size = new System.Drawing.Size(652, 98);
+            this.limitFrequencyGroupBox.TabIndex = 19;
+            this.limitFrequencyGroupBox.TabStop = false;
+            this.limitFrequencyGroupBox.Text = "限制CPU频率(当前电源计划)";
+            // 
+            // label5
+            // 
+            this.label5.Location = new System.Drawing.Point(278, 50);
+            this.label5.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(112, 28);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "使用电池:";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(478, 50);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(59, 28);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "MHz";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(209, 50);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(59, 28);
+            this.label6.TabIndex = 17;
+            this.label6.Text = "MHz";
+            // 
+            // DCCpuFreqTextBox
+            // 
+            this.DCCpuFreqTextBox.Location = new System.Drawing.Point(395, 47);
+            this.DCCpuFreqTextBox.Margin = new System.Windows.Forms.Padding(5);
+            this.DCCpuFreqTextBox.MaxLength = 4;
+            this.DCCpuFreqTextBox.Name = "DCCpuFreqTextBox";
+            this.DCCpuFreqTextBox.Size = new System.Drawing.Size(79, 34);
+            this.DCCpuFreqTextBox.TabIndex = 5;
+            this.DCCpuFreqTextBox.Text = "2400";
+            // 
+            // ACLabel
+            // 
+            this.ACLabel.Location = new System.Drawing.Point(8, 50);
+            this.ACLabel.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.ACLabel.Name = "ACLabel";
+            this.ACLabel.Size = new System.Drawing.Size(112, 28);
+            this.ACLabel.TabIndex = 4;
+            this.ACLabel.Text = "接通电源:";
+            // 
+            // ACCpuFreqTextBox
+            // 
+            this.ACCpuFreqTextBox.Location = new System.Drawing.Point(121, 46);
+            this.ACCpuFreqTextBox.Margin = new System.Windows.Forms.Padding(5);
+            this.ACCpuFreqTextBox.MaxLength = 4;
+            this.ACCpuFreqTextBox.Name = "ACCpuFreqTextBox";
+            this.ACCpuFreqTextBox.Size = new System.Drawing.Size(79, 34);
+            this.ACCpuFreqTextBox.TabIndex = 5;
+            this.ACCpuFreqTextBox.Text = "2400";
+            // 
+            // ApplyCpuFreqButton
+            // 
+            this.ApplyCpuFreqButton.Location = new System.Drawing.Point(549, 39);
+            this.ApplyCpuFreqButton.Margin = new System.Windows.Forms.Padding(5);
+            this.ApplyCpuFreqButton.Name = "ApplyCpuFreqButton";
+            this.ApplyCpuFreqButton.Size = new System.Drawing.Size(88, 44);
+            this.ApplyCpuFreqButton.TabIndex = 14;
+            this.ApplyCpuFreqButton.Text = "更改";
+            this.ApplyCpuFreqButton.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(552, 607);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(663, 28);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "* 电池充电:需预装Lenovo ACPI电源管理驱动 (否则,仅“结束”选项生效)";
+            this.label8.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // AdvancedGroupBox
+            // 
+            this.AdvancedGroupBox.Controls.Add(this.gpuTCheckBox);
+            this.AdvancedGroupBox.Controls.Add(this.animatedCheckBox);
+            this.AdvancedGroupBox.Controls.Add(this.startupCheckBox);
+            this.AdvancedGroupBox.Controls.Add(this.trayIconCheckBox);
+            this.AdvancedGroupBox.Controls.Add(this.hideWatermarkCheckBox);
+            this.AdvancedGroupBox.Location = new System.Drawing.Point(612, 200);
+            this.AdvancedGroupBox.Name = "AdvancedGroupBox";
+            this.AdvancedGroupBox.Size = new System.Drawing.Size(228, 285);
+            this.AdvancedGroupBox.TabIndex = 20;
+            this.AdvancedGroupBox.TabStop = false;
+            this.AdvancedGroupBox.Text = "高级选项";
             // 
             // DellFanManagementGuiForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(1252, 546);
+            this.ClientSize = new System.Drawing.Size(1252, 688);
+            this.Controls.Add(this.AdvancedGroupBox);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.limitFrequencyGroupBox);
+            this.Controls.Add(this.batteryChargeGroupBox);
+            this.Controls.Add(this.bkgLightGroupBox);
             this.Controls.Add(this.alertsCheckBox);
-            this.Controls.Add(this.startupCheckBox);
-            this.Controls.Add(this.animatedCheckBox);
-            this.Controls.Add(this.trayIconCheckBox);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.audioKeepAliveGroupBox);
             this.Controls.Add(this.aboutGroupBox);
@@ -936,18 +1184,18 @@ namespace DellFanManagement.App
             this.Controls.Add(this.manualGroupBox);
             this.Controls.Add(this.operationModeGroupBox);
             this.Controls.Add(this.temperatureGroupBox);
-            this.Controls.Add(this.thermalSettingGroupBox);
             this.Controls.Add(this.fansGroupBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(5);
             this.MaximizeBox = false;
             this.Name = "DellFanManagementGuiForm";
-            this.Text = "Lenovo 风扇管理 (仅适用于EC控制风扇 | Envy Chen | 2024-3-24)";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Lenovo 风扇-键盘-电池管理 (仅适用于EC控制 | Envy Chen | 2024-4-5)";
+            this.TopMost = true;
             this.Load += new System.EventHandler(this.DellFanManagementGuiForm_Load);
             this.fansGroupBox.ResumeLayout(false);
             this.fansGroupBox.PerformLayout();
-            this.thermalSettingGroupBox.ResumeLayout(false);
             this.temperatureGroupBox.ResumeLayout(false);
             this.temperatureGroupBox.PerformLayout();
             this.operationModeGroupBox.ResumeLayout(false);
@@ -963,6 +1211,13 @@ namespace DellFanManagement.App
             this.audioKeepAliveGroupBox.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
+            this.bkgLightGroupBox.ResumeLayout(false);
+            this.bkgLightGroupBox.PerformLayout();
+            this.batteryChargeGroupBox.ResumeLayout(false);
+            this.batteryChargeGroupBox.PerformLayout();
+            this.limitFrequencyGroupBox.ResumeLayout(false);
+            this.limitFrequencyGroupBox.PerformLayout();
+            this.AdvancedGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -973,11 +1228,6 @@ namespace DellFanManagement.App
         private System.Windows.Forms.GroupBox fansGroupBox;
         private System.Windows.Forms.Label fan1RpmLabel;
         private System.Windows.Forms.Label fan2RpmLabel;
-        private System.Windows.Forms.GroupBox thermalSettingGroupBox;
-        private System.Windows.Forms.RadioButton thermalSettingRadioButtonPerformance;
-        private System.Windows.Forms.RadioButton thermalSettingRadioButtonQuiet;
-        private System.Windows.Forms.RadioButton thermalSettingRadioButtonCool;
-        private System.Windows.Forms.RadioButton thermalSettingRadioButtonOptimized;
         private System.Windows.Forms.GroupBox temperatureGroupBox;
         private System.Windows.Forms.Label temperatureLabel18;
         private System.Windows.Forms.Label temperatureLabel17;
@@ -1031,16 +1281,39 @@ namespace DellFanManagement.App
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel consistencyModeStatusLabel;
         private System.Windows.Forms.NotifyIcon trayIcon;
-        private System.Windows.Forms.CheckBox trayIconCheckBox;
         private System.Windows.Forms.CheckBox alertsCheckBox;
-        private System.Windows.Forms.CheckBox animatedCheckBox;
         private System.Windows.Forms.CheckBox stopFanCheckbox;
         private System.Windows.Forms.TextBox coolStopFanDelay;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.RadioButton manualFan1RadioButtonHighest;
         private System.Windows.Forms.RadioButton manualFan1RadioButtonLow;
+        private System.Windows.Forms.CheckBox gpuTCheckBox;
+        private System.Windows.Forms.CheckBox animatedCheckBox;
         private System.Windows.Forms.CheckBox startupCheckBox;
+        private System.Windows.Forms.CheckBox trayIconCheckBox;
+        private System.Windows.Forms.CheckBox hideWatermarkCheckBox;
+        private System.Windows.Forms.GroupBox bkgLightGroupBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox bkgLightDelay;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.GroupBox batteryChargeGroupBox;
+        private System.Windows.Forms.ComboBox chargeStopThresholdComboBox;
+        private System.Windows.Forms.GroupBox limitFrequencyGroupBox;
+        private System.Windows.Forms.CheckBox allowBacklightCheckBox;
+        private System.Windows.Forms.Label ACLabel;
+        private System.Windows.Forms.TextBox ACCpuFreqTextBox;
+        private System.Windows.Forms.Button ApplyCpuFreqButton;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox DCCpuFreqTextBox;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox chargeStartThresholdComboBox;
+        private System.Windows.Forms.CheckBox chargeStopControlCheckBox;
+        private System.Windows.Forms.CheckBox chargeStartControlCheckBox;
+        private System.Windows.Forms.Label batteryChargeLabel;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.GroupBox AdvancedGroupBox;
     }
 }
 

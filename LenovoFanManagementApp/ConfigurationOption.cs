@@ -26,9 +26,19 @@
         public static readonly ConfigurationOption TrayIconAnimationEnabled = new(ConfigurationOptionType.Integer, "TrayIconAnimationEnabled");
 
         /// <summary>
-        /// Store the state of the "startup" checkbox.
+        /// Store the state of the "startup" checkbox. (Task plan now it is)
         /// </summary>
         public static readonly ConfigurationOption StartupEnabled = new(ConfigurationOptionType.Integer, "StartupEnabled");
+
+        /// <summary>
+        /// Store whether or not GPU temparature detected.
+        /// </summary>
+        public static readonly ConfigurationOption GpuTEnabled = new(ConfigurationOptionType.Integer, "GpuTEnabled");
+
+        /// <summary>
+        /// Store whether or not GPU temparature detected.
+        /// </summary>
+        public static readonly ConfigurationOption HideWatermarkEnabled = new(ConfigurationOptionType.Integer, "HideWatermarkEnabled");
 
         /// <summary>
         /// Store whether or not EC fan control is turned on in manual mode.
@@ -48,6 +58,11 @@
         // Added by Simon
         public static readonly ConfigurationOption StopFanEnabled = new(ConfigurationOptionType.Integer, "StopFanEnabled");
         public static readonly ConfigurationOption CpuCoolDelay = new(ConfigurationOptionType.Integer, "CpuCoolDelay");
+        public static readonly ConfigurationOption AllowBacklightDelay = new(ConfigurationOptionType.Integer, "AllowBacklightDelay");
+        public static readonly ConfigurationOption BacklightDelay = new(ConfigurationOptionType.Integer, "BacklightDelay");
+        // CPU Freq limit refers to https://superuser.com/questions/1786286/set-cpu-frequency-in-windows-10-no-longer-works
+        public static readonly ConfigurationOption ACCpuFreq = new(ConfigurationOptionType.Integer, "ACCpuFreq");
+        public static readonly ConfigurationOption DCCpuFreq = new(ConfigurationOptionType.Integer, "DCCpuFreq");
 
         /// <summary>
         /// Lower temperature threshold for consistency mode.

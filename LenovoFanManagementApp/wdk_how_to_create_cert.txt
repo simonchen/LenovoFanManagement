@@ -1,0 +1,9 @@
+https://learn.microsoft.com/en-us/windows-hardware/drivers/install/test-signing-a-driver-file
+
+1. creation of cert.
+C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64>makecert -r -pe -ss PrivateCertStore_lenovofan -n CN=lenovofan.com -eku 1.3.6.1.5.5.7.3.3 lenovofan.cer
+
+2. import lenovofan.cer into root authorized directory by manually
+
+3. signing driver file
+SignTool sign /v /s PrivateCertStore_lenovofan /n lenovofan.com /t http://timestamp.digicert.com D:\MyProjects\LenovoFanManagement-final\LenovoFanManagementApp\bin\Debug\net5.0-windows\win-x64\WinRing0x64.sys

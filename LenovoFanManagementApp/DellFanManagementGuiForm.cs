@@ -9,6 +9,13 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using System.IO;
 using System.Diagnostics;
+using System.Text;
+using Securite.Win32;
+using System.Security.Principal;
+using System.Security.AccessControl;
+
+using PowerManagerAPI;
+using System.Collections.Generic;
 
 namespace DellFanManagement.App
 {
@@ -17,6 +24,16 @@ namespace DellFanManagement.App
     /// </summary>
     public partial class DellFanManagementGuiForm : Form
     {
+        /// <summary>
+        ///  Power schemes supplied by Windows 10/11
+        /// </summary>
+        Guid balancedPlanGuid = new Guid("381b4222-f694-41f0-9685-ff5bb260df2e");
+        Guid highPerformancePlanGuid = new Guid("8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
+        Guid powerSaverPlanGuid = new Guid("a1841308-3541-4fab-bc81-f71556f20b4a");
+
+        /// BatterySettings
+        private readonly BatteryChargeSettings _battery;
+
         /// <summary>
         /// Shared object which contains the application state.
         /// </summary>
@@ -58,6 +75,10 @@ namespace DellFanManagement.App
         private Guid? _registeredPowerProfile;
 
         private readonly string STARTUP_NAME;
+        private List<int> _disabledStartChargeItems;
+        private List<int> _disabledStopChargeItems;
+        private int _prevStartChargeIndex;
+        private int _prevStopChargeIndex;
 
         /// <summary>
         /// Constructor.  Get everything set up before the window is displayed.
@@ -68,8 +89,14 @@ namespace DellFanManagement.App
 
             InitializeComponent();
 
+            _disabledStartChargeItems = new List<int>();
+            _disabledStopChargeItems = new List<int>();
+            _prevStartChargeIndex = -1;
+            _prevStopChargeIndex = -1;
+
             // Initialize objects.
             _configurationStore = new();
+            _battery = new BatteryChargeSettings();
             _state = new State(_configurationStore);
             _core = new Core(_state, this);
             _formClosed = false;
@@ -80,7 +107,7 @@ namespace DellFanManagement.App
             LoadTrayIcons();
 
             // Disclaimer.
-            if (_configurationStore.GetIntOption(ConfigurationOption.DisclaimerShown) != 1)
+            if (_configurationStore.GetIntOption(ConfigurationOption.DisclaimerShown) != 1 && !UacHelper.IsSystemProcess())
             {
                 ShowDisclaimer();
                 _configurationStore.SetOption(ConfigurationOption.DisclaimerShown, 1);
@@ -96,10 +123,10 @@ namespace DellFanManagement.App
             trayIcon.Click += new EventHandler(TrayIconOnClickEventHandler);
 
             // ...Thermal setting radio buttons...
-            thermalSettingRadioButtonOptimized.CheckedChanged += new EventHandler(ThermalSettingChangedEventHandler);
-            thermalSettingRadioButtonCool.CheckedChanged += new EventHandler(ThermalSettingChangedEventHandler);
-            thermalSettingRadioButtonQuiet.CheckedChanged += new EventHandler(ThermalSettingChangedEventHandler);
-            thermalSettingRadioButtonPerformance.CheckedChanged += new EventHandler(ThermalSettingChangedEventHandler);
+            //thermalSettingRadioButtonOptimized.CheckedChanged += new EventHandler(ThermalSettingChangedEventHandler);
+            //thermalSettingRadioButtonCool.CheckedChanged += new EventHandler(ThermalSettingChangedEventHandler);
+            //thermalSettingRadioButtonQuiet.CheckedChanged += new EventHandler(ThermalSettingChangedEventHandler);
+            //thermalSettingRadioButtonPerformance.CheckedChanged += new EventHandler(ThermalSettingChangedEventHandler);
 
             // ...EC fan control radio buttons...
             ecFanControlRadioButtonOn.CheckedChanged += new EventHandler(EcFanControlSettingChangedEventHandler);
@@ -131,6 +158,15 @@ namespace DellFanManagement.App
             consistencyModeRpmThresholdTextBox.TextChanged += new EventHandler(ConsistencyModeTextBoxesChangedEventHandler);
             consistencyModeApplyChangesButton.Click += new EventHandler(ConsistencyApplyChangesButtonClickedEventHandler);
 
+            // ...Cpu Freq limit...
+            ACCpuFreqTextBox.TextChanged += new EventHandler(CpuFreqChangedEventHandler);
+            DCCpuFreqTextBox.TextChanged += new EventHandler(CpuFreqChangedEventHandler);
+            ApplyCpuFreqButton.Click += new EventHandler(ApplyCpuFreqButtonClickedEventHandler);
+
+            // ...Battery charge threshold...
+            allowBacklightCheckBox.CheckedChanged += new EventHandler(AllowBacklightCheckBoxChangedEventHandler);
+            bkgLightDelay.TextChanged += new EventHandler(AllowBacklightCheckBoxChangedEventHandler);
+
             // ...Audio keep alive controls...
             audioKeepAliveComboBox.SelectedValueChanged += new EventHandler(AudioDeviceChangedEventHandler);
             audioKeepAliveCheckbox.CheckedChanged += new EventHandler(AudioKeepAliveCheckboxChangedEventHandler);
@@ -139,6 +175,42 @@ namespace DellFanManagement.App
             trayIconCheckBox.CheckedChanged += new EventHandler(TrayIconCheckBoxChangedEventHandler);
             animatedCheckBox.CheckedChanged += new EventHandler(AnimatedCheckBoxChangedEventHandler);
             startupCheckBox.CheckedChanged += new EventHandler(StartupCheckBoxChangedEventHandler);
+
+            gpuTCheckBox.CheckedChanged += new EventHandler(GpuTCheckBoxChangedEventHandler);
+            hideWatermarkCheckBox.CheckedChanged += new EventHandler(HideWatermarkCheckBoxChangedEventHandler);
+            chargeStartThresholdComboBox.SelectedValueChanged += new EventHandler(ChargeThresholdSelectEventHandler);
+            chargeStopThresholdComboBox.SelectedValueChanged += new EventHandler(ChargeThresholdSelectEventHandler);
+            chargeStartThresholdComboBox.DrawItem += new DrawItemEventHandler(ChargeStartThresholdComboBox_DrawItem);
+            chargeStopThresholdComboBox.DrawItem += new DrawItemEventHandler(ChargeStopThresholdComboBox_DrawItem);
+
+            chargeStartControlCheckBox.CheckedChanged += new EventHandler(ChargeStartControlChangedEventHandler);
+            chargeStopControlCheckBox.CheckedChanged += new EventHandler(ChargeStopControlChangedEventHandler);
+
+            if (_battery.HasBattery)
+            {
+                batteryChargeGroupBox.Enabled = true;
+                batteryChargeLabel.Text = string.Format("{0}({1})", batteryChargeLabel.Text, _battery.GetBarCode());
+
+                int t = _battery.GetChargeStopPercentage();
+                string pct_str = string.Format("{0}%", t);
+                int idx = chargeStopThresholdComboBox.FindStringExact(pct_str);
+                chargeStopThresholdComboBox.SelectedIndex = idx;
+                t = _battery.GetChargeStartPercentage();
+                pct_str = string.Format("{0}%", t);
+                idx = chargeStartThresholdComboBox.FindStringExact(pct_str);
+                chargeStartThresholdComboBox.SelectedIndex = idx;
+
+                chargeStartControlCheckBox.Checked = _battery.ChargeStartControl();
+                chargeStopControlCheckBox.Checked = _battery.ChargeStopControl();
+
+                chargeStartThresholdComboBox.Enabled = chargeStartControlCheckBox.Checked;
+                chargeStopThresholdComboBox.Enabled = chargeStopControlCheckBox.Checked;
+
+            }
+            else
+            {
+                batteryChargeGroupBox.Enabled = false;
+            }
 
             // Empty out pre-populated temperature label text fields.
             // (There are so many to allow support for lots of CPU cores, which many systems will not have.)
@@ -218,8 +290,22 @@ namespace DellFanManagement.App
                 animatedCheckBox.Checked = false;
             }
 
+            // Gpu Temparature detected?
+            int? gpuT = _configurationStore.GetIntOption(ConfigurationOption.GpuTEnabled);
+            if (gpuT == null || gpuT == 0)
+            {
+                gpuTCheckBox.Checked = false;
+            }
+
+            // Hide watermark on Windows desktop background
+            int? hideWatermark = _configurationStore.GetIntOption(ConfigurationOption.HideWatermarkEnabled);
+            if (hideWatermark == null || hideWatermark == 0)
+            {
+                hideWatermarkCheckBox.Checked = false;
+            }
+
             // Startup run
-            int? ret = _configurationStore.GetIntOption(ConfigurationOption.StartupEnabled);
+            int ? ret = _configurationStore.GetIntOption(ConfigurationOption.StartupEnabled);
             /*
             RegistryKey _registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
             string path = _registryKey.GetValue(STARTUP_NAME, "").ToString();
@@ -271,6 +357,7 @@ namespace DellFanManagement.App
                 consistencyModeRpmThresholdTextBox.Text = rpmThreshold.ToString();
             }
 
+            // Stop fan after x seconds
             if (_configurationStore.GetIntOption(ConfigurationOption.StopFanEnabled) == null ||
                 _configurationStore.GetIntOption(ConfigurationOption.StopFanEnabled) == 0)
             {
@@ -287,6 +374,58 @@ namespace DellFanManagement.App
             {
                 coolStopFanDelay.Text = cpuCoolDelay.ToString();
             }
+
+            // Auto turn off keyboard backlight after x seconds
+            if (_configurationStore.GetIntOption(ConfigurationOption.AllowBacklightDelay) == null ||
+                _configurationStore.GetIntOption(ConfigurationOption.AllowBacklightDelay) == 0)
+            {
+                allowBacklightCheckBox.Checked = false;
+                bkgLightDelay.Enabled = false;
+            }
+            else
+            {
+                allowBacklightCheckBox.Checked = true;
+                bkgLightDelay.Enabled = true;
+            }
+            int? backlightDelay = _configurationStore.GetIntOption(ConfigurationOption.BacklightDelay);
+            if (backlightDelay != null && backlightDelay >= 2 && backlightDelay < 100)
+            {
+                bkgLightDelay.Text = backlightDelay.ToString();
+            }
+
+            // CPU Frequency limits
+            int? ACCpuFreq = _configurationStore.GetIntOption(ConfigurationOption.ACCpuFreq);
+            if (ACCpuFreq == null)
+            {
+                ACCpuFreqTextBox.Text = "";
+            }
+            else
+            {
+                ACCpuFreqTextBox.Text = ACCpuFreq.ToString();
+            }
+            int? DCCpuFreq = _configurationStore.GetIntOption(ConfigurationOption.DCCpuFreq);
+            if (DCCpuFreq == null)
+            {
+                DCCpuFreqTextBox.Text = "";
+            }
+            else
+            {
+                DCCpuFreqTextBox.Text = DCCpuFreq.ToString();
+            }
+
+
+            // Power schemes 
+            /*
+            Guid activePlan = PowerManager.GetActivePlan();
+            List<Guid> plans = PowerManager.ListPlans();
+            for (int i = 0; i < plans.Count; i++)
+            {
+                Guid plan = plans[i];
+            }
+
+            var name = PowerManager.GetPlanName(highPerformancePlanGuid);
+            PowerManager.SetActivePlan(highPerformancePlanGuid);
+            */
 
             // Read previous operation mode from configuration.
             bool modeSet = false;
@@ -317,7 +456,10 @@ namespace DellFanManagement.App
             if (!modeSet)
             {
                 // Default to automatic mode.
-                operationModeRadioButtonAutomatic.Checked = true;
+                //operationModeRadioButtonAutomatic.Checked = true;
+
+                // Default to consistency mode
+                operationModeRadioButtonConsistency.Checked = true;
             }
         }
 
@@ -508,6 +650,7 @@ namespace DellFanManagement.App
             consistencyModeStatusLabel.Text = _state.ConsistencyModeStatus;
 
             // Thermal setting.
+            /*
             if (_core.RequestedThermalSetting == null)
             {
                 switch (_state.ThermalSetting)
@@ -533,6 +676,7 @@ namespace DellFanManagement.App
                         break;
                 }
             }
+            */
 
             // Restart background thread button.
             restartBackgroundThreadButton.Enabled = !_state.BackgroundThreadRunning;
@@ -768,14 +912,16 @@ namespace DellFanManagement.App
         /// <param name="enabled">Indicates whether to enable or disable the controls</param>
         private void SetThermalSettingAvaiability(bool enabled)
         {
-            thermalSettingGroupBox.Enabled = enabled;
+            //thermalSettingGroupBox.Enabled = enabled;
 
             if (!enabled)
             {
+                /*
                 thermalSettingRadioButtonOptimized.Checked = false;
                 thermalSettingRadioButtonCool.Checked = false;
                 thermalSettingRadioButtonQuiet.Checked = false;
                 thermalSettingRadioButtonPerformance.Checked = false;
+                */
             }
         }
 
@@ -814,6 +960,7 @@ namespace DellFanManagement.App
         /// </summary>
         private void ThermalSettingChangedEventHandler(Object sender, EventArgs e)
         {
+            /*
             if (thermalSettingRadioButtonOptimized.Checked)
             {
                 _core.RequestThermalSetting(ThermalSetting.Optimized);
@@ -830,6 +977,7 @@ namespace DellFanManagement.App
             {
                 _core.RequestThermalSetting(ThermalSetting.Performance);
             }
+            */
         }
 
         /// <summary>
@@ -1003,6 +1151,92 @@ namespace DellFanManagement.App
             CheckConsistencyModeOptionsConsistency();
         }
 
+        private void CpuFreqChangedEventHandler(Object sender, EventArgs e)
+        {
+            bool success = false;
+
+            if (Regex.IsMatch(ACCpuFreqTextBox.Text, "[^0-9]"))
+            {
+                ACCpuFreqTextBox.Text = Regex.Replace(ACCpuFreqTextBox.Text, "[^0-9]", "");
+            }
+            success = int.TryParse(ACCpuFreqTextBox.Text, out int ACCpuFreq);
+
+            if (Regex.IsMatch(DCCpuFreqTextBox.Text, "[^0-9]"))
+            {
+                DCCpuFreqTextBox.Text = Regex.Replace(DCCpuFreqTextBox.Text, "[^0-9]", "");
+            }
+            success = int.TryParse(DCCpuFreqTextBox.Text, out int DCCpuFreq);
+
+            ApplyCpuFreqButton.Enabled = success;
+        }
+
+        private void ApplyCpuFreqButtonClickedEventHandler(Object sender, EventArgs e)
+        {
+            // Create a new task using existing xml description
+            try
+            {
+                Process p = new Process();
+                p.StartInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "powercfg.exe");
+                p.StartInfo.Arguments = "  /setDCvalueindex scheme_current SUB_PROCESSOR PROCFREQMAX " + DCCpuFreqTextBox.Text;
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.Start();
+                p.WaitForExit();
+                p.Close();
+
+                p.StartInfo.Arguments = "  /setACvalueindex scheme_current SUB_PROCESSOR PROCFREQMAX " + ACCpuFreqTextBox.Text;
+                p.Start();
+                p.WaitForExit();
+                p.Close();
+
+                bool success = int.TryParse(ACCpuFreqTextBox.Text, out int ACCpuFreq);
+                if (success)
+                {
+                    _configurationStore.SetOption(ConfigurationOption.ACCpuFreq, ACCpuFreq);
+                }
+                success = int.TryParse(DCCpuFreqTextBox.Text, out int DCCpuFreq);
+                if (success)
+                {
+                    _configurationStore.SetOption(ConfigurationOption.DCCpuFreq, DCCpuFreq);
+                }
+
+                ApplyCpuFreqButton.Enabled = false;
+            }
+            catch (Exception)
+            {
+                // do nothing
+                // do nothing
+            }
+        }
+
+        private void AllowBacklightCheckBoxChangedEventHandler(Object sender, EventArgs e)
+        {
+            if (Regex.IsMatch(bkgLightDelay.Text, "[^0-9]"))
+            {
+                bkgLightDelay.Text = Regex.Replace(bkgLightDelay.Text, "[^0-9]", "");
+            }
+
+            bool enableBacklight = allowBacklightCheckBox.Checked;
+            bkgLightDelay.Enabled = enableBacklight;
+
+            bool success = int.TryParse(bkgLightDelay.Text, out int backLightDelay);
+            //bool enableStopFan = stopFanCheckbox.Checked;
+            if (success)
+            {
+                if (backLightDelay < 2)
+                {
+                    bkgLightDelay.Text = "2";
+                    backLightDelay = 2;
+                }
+                _configurationStore.SetOption(ConfigurationOption.AllowBacklightDelay, enableBacklight ? 1 : 0);
+                _configurationStore.SetOption(ConfigurationOption.BacklightDelay, backLightDelay);
+                _state.EnableBacklight(enableBacklight);
+                _state.SetBacklightDelay(backLightDelay);
+            }
+        }
+
         /// <summary>
         /// Called when the consistency mode "Apply changes" button is clicked.
         /// </summary>
@@ -1104,6 +1338,320 @@ namespace DellFanManagement.App
             }
             _registryKey.Close();
             */
+        }
+
+        private void GpuTCheckBoxChangedEventHandler(object sender, EventArgs e)
+        {
+            CheckBox chk = sender as CheckBox;
+            _configurationStore.SetOption(ConfigurationOption.GpuTEnabled, gpuTCheckBox.Checked ? 1 : 0);
+            if (chk.Focused == false) return;
+
+            MessageBox.Show("改动后请手动重启程序！");
+            /*
+            DialogResult dialogResult = MessageBox.Show("改动后请手动重启程序！", "确认", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                //System.Diagnostics.Process.Start(Application.ExecutablePath);
+                //Application.Exit();
+                ProcessStartInfo Info = new ProcessStartInfo();
+                Info.Arguments = "/C ping 127.0.0.1 -n 2 && \"" + Application.ExecutablePath + "\"";
+                Info.WindowStyle = ProcessWindowStyle.Hidden;
+                Info.CreateNoWindow = true;
+                Info.FileName = "cmd.exe";
+                Process.Start(Info);
+                Application.Exit();
+            }
+            */
+        }
+
+        // OBSOLETEDv
+        private void _UpdateWatermarkRegistry(string val=@"%SystemRoot%\system32\explorerframe.dll")
+        {
+            string originalString = val;
+            byte[] bytes = Encoding.Unicode.GetBytes(originalString);
+            string hexString = BitConverter.ToString(bytes).Replace("-", ",") + ",00,00";
+
+            var registryFilePath = $"{Directory.GetCurrentDirectory()}\\watermark.reg";
+            if (File.Exists(registryFilePath))
+            {
+                File.Delete(registryFilePath);
+            }
+            string registryStr =
+                "﻿Windows Registry Editor Version 5.00\r\n" +
+                "\r\n" +
+                @"[HKEY_CLASSES_ROOT\CLSID\{ab0b37ec-56f6-4a0e-a8fd-7a8bf7c2da96}\InProcServer32]" +
+                "\r\n@=hex(2):"+ hexString+ "\r\n" +
+                "\r\n";
+
+            // 替换
+            File.WriteAllText(registryFilePath, registryStr);
+
+            Process regeditProcess = Process.Start(new ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "regedt32.exe"), $"/s {registryFilePath}")
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true
+            });
+            regeditProcess.WaitForExit();
+        }
+
+        private void RestartExplorer()
+        {
+            foreach (Process p in Process.GetProcesses())
+            {
+                // In case we get Access Denied
+                try
+                {
+                    if (p.MainModule.FileName.ToLower().EndsWith(":\\windows\\explorer.exe"))
+                    {
+                        p.Kill();
+                        break;
+                    }
+                }
+                catch
+                { }
+            }
+            Process.Start("explorer.exe");
+        }
+
+        private void UpdateWatermarkRegistry(string val = @"%SystemRoot%\system32\explorerframe.dll")
+        {
+            string originalString = val;
+            byte[] bytes = Encoding.Unicode.GetBytes(originalString);
+            string hexString = BitConverter.ToString(bytes).Replace("-", ",") + ",00,00";
+
+            try
+            {
+                /* Get the ID of the current user (aka Amin)
+                 */
+                WindowsIdentity id = WindowsIdentity.GetCurrent();
+
+                /* Add the TakeOwnership Privilege
+                 */
+                bool blRc = natif.MySetPrivilege(natif.TakeOwnership, true);
+                if (!blRc)
+                    throw new PrivilegeNotHeldException(natif.TakeOwnership);
+
+                /* Add the Restore Privilege (must be done to change the owner)
+                 */
+                blRc = natif.MySetPrivilege(natif.Restore, true);
+                if (!blRc)
+                    throw new PrivilegeNotHeldException(natif.Restore);
+
+                /* Open a registry which I don't own
+                 */
+                RegistryKey rkADSnapInsNodesTypes = Registry.ClassesRoot.OpenSubKey(@"CLSID\{ab0b37ec-56f6-4a0e-a8fd-7a8bf7c2da96}\InProcServer32", RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryRights.TakeOwnership);
+                RegistrySecurity regSecTempo = rkADSnapInsNodesTypes.GetAccessControl(AccessControlSections.All);
+
+                /* Get the real owner
+                 */
+                IdentityReference oldId = regSecTempo.GetOwner(typeof(SecurityIdentifier));
+                SecurityIdentifier siTrustedInstaller = new SecurityIdentifier(oldId.ToString());
+                Console.WriteLine(oldId.ToString());
+
+                /* process user become the owner
+                 */
+                regSecTempo.SetOwner(id.User);
+                rkADSnapInsNodesTypes.SetAccessControl(regSecTempo);
+
+                /* Add the full control
+                 */
+                RegistryAccessRule regARFullAccess = new RegistryAccessRule(id.User, RegistryRights.FullControl, InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow);
+                regSecTempo.AddAccessRule(regARFullAccess);
+                rkADSnapInsNodesTypes.SetAccessControl(regSecTempo);
+
+                /* What I have TO DO
+                 */
+                //rkADSnapInsNodesTypes.DeleteSubKey("{3bcd9db8-f84b-451c-952f-6c52b81f9ec6}");
+                // Open same key again with SetValue permission
+                RegistryKey rw = Registry.ClassesRoot.OpenSubKey(@"CLSID\{ab0b37ec-56f6-4a0e-a8fd-7a8bf7c2da96}\InProcServer32", RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryRights.SetValue);
+                rw.SetValue("", val, RegistryValueKind.ExpandString);
+
+                /* Put back the original owner
+                 */
+                //regSecTempo.SetOwner(siFinalOwner);
+                regSecTempo.SetOwner(siTrustedInstaller);
+                rkADSnapInsNodesTypes.SetAccessControl(regSecTempo);
+
+                /* Put back the original Rights
+                 */
+                regSecTempo.RemoveAccessRule(regARFullAccess);
+                rkADSnapInsNodesTypes.SetAccessControl(regSecTempo);
+            }
+            catch (Exception excpt)
+            {
+                throw excpt;
+            }
+        }
+
+        private void HideWatermarkCheckBoxChangedEventHandler(object sender, EventArgs e)
+        {
+            CheckBox chk = sender as CheckBox;
+            _configurationStore.SetOption(ConfigurationOption.HideWatermarkEnabled, hideWatermarkCheckBox.Checked ? 1 : 0);
+            if (chk.Focused == false) 
+                return;
+
+            //RegistryKey _registryKey = Registry.ClassesRoot.OpenSubKey(@"CLSID\{ab0b37ec-56f6-4a0e-a8fd-7a8bf7c2da96}\InProcServer32", 
+            //    RegistryKeyPermissionCheck.ReadWriteSubTree, System.Security.AccessControl.RegistryRights.ReadPermissions);
+            string msg = "这将关闭当前所有资源管理器, 并重启生效!";
+            DialogResult dialogResult = MessageBox.Show(msg, "确认", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.No)
+            {
+                return;
+            }
+
+            if (hideWatermarkCheckBox.Checked)
+            {
+                string filename = "painter_x64.dll";
+                string filePath = string.Format("{0}{1}{2}", Directory.GetCurrentDirectory(), Path.DirectorySeparatorChar, filename);
+                UpdateWatermarkRegistry(filePath);
+            }
+            else
+            {
+                UpdateWatermarkRegistry(@"%SystemRoot%\system32\explorerframe.dll");
+            }
+            RestartExplorer();
+            //_registryKey.Close();
+        }
+
+        private void ChargeThresholdSelectEventHandler(object sender, EventArgs e)
+        {
+            ComboBox cb = sender as ComboBox;
+            if (!cb.Focused)
+            {
+                if (sender == chargeStopThresholdComboBox)
+                {
+                    _prevStopChargeIndex = cb.SelectedIndex;
+                } else
+                {
+                    _prevStartChargeIndex = cb.SelectedIndex;
+                }
+                return;
+            }
+            
+            string val_str = cb.GetItemText(cb.Items[cb.SelectedIndex]);
+            int pct = int.Parse(val_str.Replace("%", ""));
+
+            if (sender == chargeStopThresholdComboBox)
+            {
+                if (_disabledStopChargeItems.IndexOf(cb.SelectedIndex) >= 0)
+                {
+                    chargeStopThresholdComboBox.Parent.Focus();
+                    chargeStopThresholdComboBox.SelectedIndex = _prevStopChargeIndex;
+                    return;
+                }
+
+                _prevStopChargeIndex = cb.SelectedIndex;
+                _disabledStartChargeItems.RemoveAll(item => true);
+                int max_pct_start_allowed = 0;
+                for (int i = 0; i < chargeStartThresholdComboBox.Items.Count; i++)
+                {
+                    string text = chargeStartThresholdComboBox.GetItemText(chargeStartThresholdComboBox.Items[i]);
+                    int cur_pct = int.Parse(text.Replace("%", ""));
+                    if (cur_pct >= pct)
+                    {
+                        _disabledStartChargeItems.Add(i);
+                    }
+                    else
+                    {
+                        max_pct_start_allowed = Math.Max(cur_pct, max_pct_start_allowed);
+                    }
+                }
+                int start_idx = chargeStartThresholdComboBox.SelectedIndex;
+                if (start_idx == -1)
+                {
+                    start_idx = 0;
+                }
+                string var_start = chargeStartThresholdComboBox.GetItemText(chargeStartThresholdComboBox.Items[start_idx]);
+                int pct_start = int.Parse(var_start.Replace("%", ""));
+                if (pct_start >= pct)
+                {
+                    start_idx = chargeStartThresholdComboBox.FindStringExact(string.Format("{0}%", max_pct_start_allowed));
+                    //if (start_idx != -1)
+                    {
+                        chargeStartThresholdComboBox.SelectedIndex = start_idx;
+                    }
+                    _battery.SetChargeStartPercentage(max_pct_start_allowed);
+                }
+
+                _battery.SetChargeStopPercentage(pct);
+            }
+            else
+            {
+                if (_disabledStartChargeItems.IndexOf(cb.SelectedIndex) >= 0)
+                {
+                    chargeStartThresholdComboBox.Parent.Focus();
+                    chargeStartThresholdComboBox.SelectedIndex = _prevStartChargeIndex;
+                    return;
+                }
+
+                _prevStartChargeIndex = cb.SelectedIndex;
+                _disabledStopChargeItems.RemoveAll(item => true);
+                for (int i = 0; i < chargeStopThresholdComboBox.Items.Count; i++)
+                {
+                    string text = chargeStopThresholdComboBox.GetItemText(chargeStopThresholdComboBox.Items[i]);
+                    int cur_pct = int.Parse(text.Replace("%", ""));
+                    if (cur_pct <= pct)
+                    {
+                        _disabledStopChargeItems.Add(i);
+                    }
+                }
+                _battery.SetChargeStartPercentage(pct);
+            }
+            //if (chargeStopThresholdComboBox.SelectedIndex < 0) return;
+
+            //string val_str = chargeStopThresholdComboBox.GetItemText(chargeStopThresholdComboBox.Items[chargeStopThresholdComboBox.SelectedIndex]);
+            //byte val = Convert.ToByte(val_str.Replace("%", ""));
+            //_battery.SetChargeThreshold(val);
+        }
+
+        private void ChargeStartControlChangedEventHandler(object sender , EventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            if (!cb.Focused) return;
+
+            _battery.EnableChargeStart(cb.Checked);
+            chargeStartThresholdComboBox.Enabled = cb.Checked;
+        }
+
+        private void ChargeStopControlChangedEventHandler(object sender, EventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            if (!cb.Focused) return;
+
+            _battery.EnableChargeStop(cb.Checked);
+            chargeStopThresholdComboBox.Enabled = cb.Checked;
+        }
+
+        private void ChargeStartThresholdComboBox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index == -1) return;
+
+            if (_disabledStartChargeItems.IndexOf(e.Index) >= 0 ) //We are disabling item based on Index, you can have your logic here
+            {
+                e.Graphics.DrawString(chargeStartThresholdComboBox.Items[e.Index].ToString(), e.Font, Brushes.LightGray, e.Bounds);
+            }
+            else
+            {
+                e.DrawBackground();
+                e.Graphics.DrawString(chargeStartThresholdComboBox.Items[e.Index].ToString(), e.Font, Brushes.Black, e.Bounds);
+                e.DrawFocusRectangle();
+            }
+        }
+
+        private void ChargeStopThresholdComboBox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index == -1) return;
+
+            if (_disabledStopChargeItems.IndexOf(e.Index) >= 0) //We are disabling item based on Index, you can have your logic here
+            {
+                e.Graphics.DrawString(chargeStopThresholdComboBox.Items[e.Index].ToString(), e.Font, Brushes.LightGray, e.Bounds);
+            }
+            else
+            { 
+                e.DrawBackground();
+                e.Graphics.DrawString(chargeStopThresholdComboBox.Items[e.Index].ToString(), e.Font, Brushes.Black, e.Bounds);
+                e.DrawFocusRectangle();
+            }
         }
 
         /// <summary>
@@ -1360,6 +1908,11 @@ namespace DellFanManagement.App
         }
 
         private void animatedCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
         {
 
         }

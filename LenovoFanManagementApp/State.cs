@@ -13,6 +13,7 @@ namespace DellFanManagement.App
     /// </summary>
     public class State
     {
+        private KeyboardLightSettings _keyboardBacklight;
         /// <summary>
         /// Object for reading CPU and GPU temperatures from the system.
         /// </summary>
@@ -98,6 +99,21 @@ namespace DellFanManagement.App
         /// </summary>
         private int _thermalSettingReadBackoff;
 
+        private bool _enableBacklight;
+
+        public void Dispose()
+        {
+            foreach (TemperatureComponent component in _temperatureReaders.Keys)
+            {
+                TemperatureReader reader = _temperatureReaders[component];
+                if (reader is LibreHardwareMonitorTemperatureReader)
+                {
+                    ((LibreHardwareMonitorTemperatureReader)reader).Dispose();
+                }
+            }
+
+            _keyboardBacklight.Dispose();
+        }
         /// <summary>
         /// Constructor; initialize everything.
         /// </summary>
@@ -119,6 +135,18 @@ namespace DellFanManagement.App
             _consecutiveThermalSettingFailures = 0;
             _thermalSettingReadBackoff = 0;
 
+            int? enableBacklight = configurationStore.GetIntOption(ConfigurationOption.AllowBacklightDelay);
+            int? backLightDelay = configurationStore.GetIntOption(ConfigurationOption.BacklightDelay);
+            if (enableBacklight == null)
+            {
+                enableBacklight = 0;
+            }
+            _enableBacklight = (int)enableBacklight > 0 ? true : false;
+            if (backLightDelay == null)
+            {
+                backLightDelay = 10;
+            }
+            _keyboardBacklight = new((int)backLightDelay);
             // Initialize temperature readers.
 
             _temperatureReaders = new();
@@ -129,14 +157,18 @@ namespace DellFanManagement.App
                 _temperatureReaders.Add(TemperatureComponent.CPU, new CpuTemperatureReader());
             }
 
-            if (NvidiaGpuTemperatureReader.IsNvapiSupported())
+            int? gpuT = configurationStore.GetIntOption(ConfigurationOption.GpuTEnabled);
+            if (gpuT == 1)
             {
-                // Use NVAPI if it is available.
-                _temperatureReaders.Add(TemperatureComponent.GPU, new NvidiaGpuTemperatureReader());
-            }
-            else
-            {
-                _temperatureReaders.Add(TemperatureComponent.GPU, new GenericGpuTemperatureReader());
+                if (NvidiaGpuTemperatureReader.IsNvapiSupported())
+                {
+                    // Use NVAPI if it is available.
+                    _temperatureReaders.Add(TemperatureComponent.GPU, new NvidiaGpuTemperatureReader());
+                }
+                else
+                {
+                    _temperatureReaders.Add(TemperatureComponent.GPU, new GenericGpuTemperatureReader());
+                }
             }
 
             // Initialize fan speed reader.
@@ -154,6 +186,14 @@ namespace DellFanManagement.App
             Release();
         }
 
+        public void EnableBacklight(bool ok)
+        {
+            _enableBacklight = ok;
+        }
+        public void SetBacklightDelay(int delay=10)
+        {
+            _keyboardBacklight.ResetDelay(delay);
+        }
         /// <summary>
         /// Update the state.
         /// </summary>
@@ -167,6 +207,11 @@ namespace DellFanManagement.App
             UpdatePowerProfile();
             UpdateThermalSetting();
             UpdateAudioDevices();
+
+            if (_enableBacklight)
+            {
+                _keyboardBacklight.Update();
+            }
         }
 
         /// <summary>
