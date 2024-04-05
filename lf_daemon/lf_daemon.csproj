@@ -12,6 +12,8 @@
     <OutputPath>..\LenovoFanManagementApp\bin\Debug\net5.0-windows\win-x64</OutputPath>
     <PlatformTarget>x64</PlatformTarget>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+	<SelfContained>false</SelfContained>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -20,6 +22,9 @@
 	<DebugType>none</DebugType>
 	<DebugSymbols>false</DebugSymbols>
 	<PlatformTarget>x64</PlatformTarget>
+	<SelfContained>false</SelfContained>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
   <ItemGroup>
