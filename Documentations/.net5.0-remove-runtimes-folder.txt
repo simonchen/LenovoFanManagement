@@ -1,0 +1,14 @@
+https://stackoverflow.com/questions/67920055/superfluous-runtimes-folder-created-in-output-directory-for-net-5-project
+That's pretty easy to change: In your csproj file, inside the PropertyGroup, set the SelfContained property to "false" and specify a RuntimeIdentifier; like this:
+
+<PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+</PropertyGroup>
+
+
+注意输出文件夹会自动加win-x64子目录
