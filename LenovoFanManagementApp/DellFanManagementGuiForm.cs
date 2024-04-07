@@ -1249,12 +1249,12 @@ namespace DellFanManagement.App
                 bool success = int.TryParse(ACCpuFreq1TextBox.Text, out int ACCpuFreq1);
                 if (success)
                 {
-                    _configurationStore.SetOption(ConfigurationOption.ACCpuFreq, ACCpuFreq1);
+                    _configurationStore.SetOption(ConfigurationOption.ACCpuFreq1, ACCpuFreq1);
                 }
                 success = int.TryParse(DCCpuFreq1TextBox.Text, out int DCCpuFreq1);
                 if (success)
                 {
-                    _configurationStore.SetOption(ConfigurationOption.DCCpuFreq, DCCpuFreq1);
+                    _configurationStore.SetOption(ConfigurationOption.DCCpuFreq1, DCCpuFreq1);
                 }
 
                 success = int.TryParse(ACCpuFreqTextBox.Text, out int ACCpuFreq);
