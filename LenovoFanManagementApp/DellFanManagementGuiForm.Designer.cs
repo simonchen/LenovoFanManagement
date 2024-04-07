@@ -111,12 +111,18 @@ namespace DellFanManagement.App
             this.chargeStopControlCheckBox = new System.Windows.Forms.CheckBox();
             this.chargeStartControlCheckBox = new System.Windows.Forms.CheckBox();
             this.limitFrequencyGroupBox = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.DCCpuFreqTextBox = new System.Windows.Forms.TextBox();
+            this.DCCpuFreq1TextBox = new System.Windows.Forms.TextBox();
             this.ACLabel = new System.Windows.Forms.Label();
             this.ACCpuFreqTextBox = new System.Windows.Forms.TextBox();
+            this.ACCpuFreq1TextBox = new System.Windows.Forms.TextBox();
             this.ApplyCpuFreqButton = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.AdvancedGroupBox = new System.Windows.Forms.GroupBox();
@@ -948,7 +954,7 @@ namespace DellFanManagement.App
             this.allowBacklightCheckBox.Location = new System.Drawing.Point(15, 0);
             this.allowBacklightCheckBox.Margin = new System.Windows.Forms.Padding(5);
             this.allowBacklightCheckBox.Name = "allowBacklightCheckBox";
-            this.allowBacklightCheckBox.Size = new System.Drawing.Size(221, 32);
+            this.allowBacklightCheckBox.Size = new System.Drawing.Size(215, 32);
             this.allowBacklightCheckBox.TabIndex = 17;
             this.allowBacklightCheckBox.Text = "键盘背光自动关闭";
             this.allowBacklightCheckBox.UseVisualStyleBackColor = true;
@@ -962,7 +968,7 @@ namespace DellFanManagement.App
             this.batteryChargeGroupBox.Controls.Add(this.chargeStartControlCheckBox);
             this.batteryChargeGroupBox.Location = new System.Drawing.Point(265, 502);
             this.batteryChargeGroupBox.Name = "batteryChargeGroupBox";
-            this.batteryChargeGroupBox.Size = new System.Drawing.Size(280, 137);
+            this.batteryChargeGroupBox.Size = new System.Drawing.Size(271, 137);
             this.batteryChargeGroupBox.TabIndex = 19;
             this.batteryChargeGroupBox.TabStop = false;
             // 
@@ -997,9 +1003,9 @@ namespace DellFanManagement.App
             "50%",
             "45%",
             "40%"});
-            this.chargeStartThresholdComboBox.Location = new System.Drawing.Point(105, 35);
+            this.chargeStartThresholdComboBox.Location = new System.Drawing.Point(113, 35);
             this.chargeStartThresholdComboBox.Name = "chargeStartThresholdComboBox";
-            this.chargeStartThresholdComboBox.Size = new System.Drawing.Size(149, 35);
+            this.chargeStartThresholdComboBox.Size = new System.Drawing.Size(136, 35);
             this.chargeStartThresholdComboBox.TabIndex = 0;
             // 
             // chargeStopThresholdComboBox
@@ -1022,9 +1028,9 @@ namespace DellFanManagement.App
             "50%",
             "45%",
             "40%"});
-            this.chargeStopThresholdComboBox.Location = new System.Drawing.Point(105, 84);
+            this.chargeStopThresholdComboBox.Location = new System.Drawing.Point(113, 84);
             this.chargeStopThresholdComboBox.Name = "chargeStopThresholdComboBox";
-            this.chargeStopThresholdComboBox.Size = new System.Drawing.Size(149, 35);
+            this.chargeStopThresholdComboBox.Size = new System.Drawing.Size(136, 35);
             this.chargeStopThresholdComboBox.TabIndex = 0;
             // 
             // chargeStopControlCheckBox
@@ -1032,7 +1038,7 @@ namespace DellFanManagement.App
             this.chargeStopControlCheckBox.AutoSize = true;
             this.chargeStopControlCheckBox.Checked = true;
             this.chargeStopControlCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chargeStopControlCheckBox.Location = new System.Drawing.Point(17, 84);
+            this.chargeStopControlCheckBox.Location = new System.Drawing.Point(25, 84);
             this.chargeStopControlCheckBox.Margin = new System.Windows.Forms.Padding(5);
             this.chargeStopControlCheckBox.Name = "chargeStopControlCheckBox";
             this.chargeStopControlCheckBox.Size = new System.Drawing.Size(80, 32);
@@ -1045,7 +1051,7 @@ namespace DellFanManagement.App
             this.chargeStartControlCheckBox.AutoSize = true;
             this.chargeStartControlCheckBox.Checked = true;
             this.chargeStartControlCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chargeStartControlCheckBox.Location = new System.Drawing.Point(17, 35);
+            this.chargeStartControlCheckBox.Location = new System.Drawing.Point(25, 35);
             this.chargeStartControlCheckBox.Margin = new System.Windows.Forms.Padding(5);
             this.chargeStartControlCheckBox.Name = "chargeStartControlCheckBox";
             this.chargeStartControlCheckBox.Size = new System.Drawing.Size(80, 32);
@@ -1055,19 +1061,69 @@ namespace DellFanManagement.App
             // 
             // limitFrequencyGroupBox
             // 
+            this.limitFrequencyGroupBox.Controls.Add(this.label12);
+            this.limitFrequencyGroupBox.Controls.Add(this.label10);
+            this.limitFrequencyGroupBox.Controls.Add(this.label11);
+            this.limitFrequencyGroupBox.Controls.Add(this.label9);
             this.limitFrequencyGroupBox.Controls.Add(this.label5);
             this.limitFrequencyGroupBox.Controls.Add(this.label7);
             this.limitFrequencyGroupBox.Controls.Add(this.label6);
             this.limitFrequencyGroupBox.Controls.Add(this.DCCpuFreqTextBox);
+            this.limitFrequencyGroupBox.Controls.Add(this.DCCpuFreq1TextBox);
             this.limitFrequencyGroupBox.Controls.Add(this.ACLabel);
             this.limitFrequencyGroupBox.Controls.Add(this.ACCpuFreqTextBox);
+            this.limitFrequencyGroupBox.Controls.Add(this.ACCpuFreq1TextBox);
             this.limitFrequencyGroupBox.Controls.Add(this.ApplyCpuFreqButton);
-            this.limitFrequencyGroupBox.Location = new System.Drawing.Point(551, 502);
+            this.limitFrequencyGroupBox.Location = new System.Drawing.Point(542, 502);
             this.limitFrequencyGroupBox.Name = "limitFrequencyGroupBox";
-            this.limitFrequencyGroupBox.Size = new System.Drawing.Size(652, 98);
+            this.limitFrequencyGroupBox.Size = new System.Drawing.Size(661, 116);
             this.limitFrequencyGroupBox.TabIndex = 19;
             this.limitFrequencyGroupBox.TabStop = false;
             this.limitFrequencyGroupBox.Text = "限制CPU频率(当前电源计划)";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(381, 80);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(24, 28);
+            this.label12.TabIndex = 18;
+            this.label12.Text = "E";
+            this.label12.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(110, 80);
+            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(24, 28);
+            this.label10.TabIndex = 18;
+            this.label10.Text = "E";
+            this.label10.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(381, 38);
+            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(25, 28);
+            this.label11.TabIndex = 18;
+            this.label11.Text = "P";
+            this.label11.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(110, 38);
+            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(25, 28);
+            this.label9.TabIndex = 18;
+            this.label9.Text = "P";
+            this.label9.Click += new System.EventHandler(this.label2_Click);
             // 
             // label5
             // 
@@ -1082,7 +1138,7 @@ namespace DellFanManagement.App
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(478, 50);
+            this.label7.Location = new System.Drawing.Point(484, 50);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(59, 28);
@@ -1092,7 +1148,7 @@ namespace DellFanManagement.App
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(209, 50);
+            this.label6.Location = new System.Drawing.Point(213, 50);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(59, 28);
@@ -1101,17 +1157,27 @@ namespace DellFanManagement.App
             // 
             // DCCpuFreqTextBox
             // 
-            this.DCCpuFreqTextBox.Location = new System.Drawing.Point(395, 47);
+            this.DCCpuFreqTextBox.Location = new System.Drawing.Point(408, 74);
             this.DCCpuFreqTextBox.Margin = new System.Windows.Forms.Padding(5);
             this.DCCpuFreqTextBox.MaxLength = 4;
             this.DCCpuFreqTextBox.Name = "DCCpuFreqTextBox";
-            this.DCCpuFreqTextBox.Size = new System.Drawing.Size(79, 34);
+            this.DCCpuFreqTextBox.Size = new System.Drawing.Size(69, 34);
             this.DCCpuFreqTextBox.TabIndex = 5;
             this.DCCpuFreqTextBox.Text = "2400";
             // 
+            // DCCpuFreq1TextBox
+            // 
+            this.DCCpuFreq1TextBox.Location = new System.Drawing.Point(408, 36);
+            this.DCCpuFreq1TextBox.Margin = new System.Windows.Forms.Padding(5);
+            this.DCCpuFreq1TextBox.MaxLength = 4;
+            this.DCCpuFreq1TextBox.Name = "DCCpuFreq1TextBox";
+            this.DCCpuFreq1TextBox.Size = new System.Drawing.Size(69, 34);
+            this.DCCpuFreq1TextBox.TabIndex = 5;
+            this.DCCpuFreq1TextBox.Text = "2400";
+            // 
             // ACLabel
             // 
-            this.ACLabel.Location = new System.Drawing.Point(8, 50);
+            this.ACLabel.Location = new System.Drawing.Point(7, 50);
             this.ACLabel.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.ACLabel.Name = "ACLabel";
             this.ACLabel.Size = new System.Drawing.Size(112, 28);
@@ -1120,17 +1186,27 @@ namespace DellFanManagement.App
             // 
             // ACCpuFreqTextBox
             // 
-            this.ACCpuFreqTextBox.Location = new System.Drawing.Point(121, 46);
+            this.ACCpuFreqTextBox.Location = new System.Drawing.Point(138, 74);
             this.ACCpuFreqTextBox.Margin = new System.Windows.Forms.Padding(5);
             this.ACCpuFreqTextBox.MaxLength = 4;
             this.ACCpuFreqTextBox.Name = "ACCpuFreqTextBox";
-            this.ACCpuFreqTextBox.Size = new System.Drawing.Size(79, 34);
+            this.ACCpuFreqTextBox.Size = new System.Drawing.Size(70, 34);
             this.ACCpuFreqTextBox.TabIndex = 5;
             this.ACCpuFreqTextBox.Text = "2400";
             // 
+            // ACCpuFreq1TextBox
+            // 
+            this.ACCpuFreq1TextBox.Location = new System.Drawing.Point(138, 33);
+            this.ACCpuFreq1TextBox.Margin = new System.Windows.Forms.Padding(5);
+            this.ACCpuFreq1TextBox.MaxLength = 4;
+            this.ACCpuFreq1TextBox.Name = "ACCpuFreq1TextBox";
+            this.ACCpuFreq1TextBox.Size = new System.Drawing.Size(70, 34);
+            this.ACCpuFreq1TextBox.TabIndex = 5;
+            this.ACCpuFreq1TextBox.Text = "2400";
+            // 
             // ApplyCpuFreqButton
             // 
-            this.ApplyCpuFreqButton.Location = new System.Drawing.Point(549, 39);
+            this.ApplyCpuFreqButton.Location = new System.Drawing.Point(555, 39);
             this.ApplyCpuFreqButton.Margin = new System.Windows.Forms.Padding(5);
             this.ApplyCpuFreqButton.Name = "ApplyCpuFreqButton";
             this.ApplyCpuFreqButton.Size = new System.Drawing.Size(88, 44);
@@ -1141,7 +1217,7 @@ namespace DellFanManagement.App
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(552, 607);
+            this.label8.Location = new System.Drawing.Point(552, 623);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(663, 28);
@@ -1191,7 +1267,7 @@ namespace DellFanManagement.App
             this.MaximizeBox = false;
             this.Name = "DellFanManagementGuiForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Lenovo 风扇-键盘-电池管理 (仅适用于EC控制 | Envy Chen | 2024-4-5)";
+            this.Text = "Lenovo 风扇-键盘-电池-CPU (仅适用于EC控制 | Envy Chen | 2024-4-5)";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.DellFanManagementGuiForm_Load);
             this.fansGroupBox.ResumeLayout(false);
@@ -1302,10 +1378,10 @@ namespace DellFanManagement.App
         private System.Windows.Forms.GroupBox limitFrequencyGroupBox;
         private System.Windows.Forms.CheckBox allowBacklightCheckBox;
         private System.Windows.Forms.Label ACLabel;
-        private System.Windows.Forms.TextBox ACCpuFreqTextBox;
+        private System.Windows.Forms.TextBox ACCpuFreq1TextBox;
         private System.Windows.Forms.Button ApplyCpuFreqButton;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox DCCpuFreqTextBox;
+        private System.Windows.Forms.TextBox DCCpuFreq1TextBox;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox chargeStartThresholdComboBox;
@@ -1314,6 +1390,12 @@ namespace DellFanManagement.App
         private System.Windows.Forms.Label batteryChargeLabel;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.GroupBox AdvancedGroupBox;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox DCCpuFreqTextBox;
+        private System.Windows.Forms.TextBox ACCpuFreqTextBox;
     }
 }
 

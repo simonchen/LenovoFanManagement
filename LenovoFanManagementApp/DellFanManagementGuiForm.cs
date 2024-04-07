@@ -159,6 +159,8 @@ namespace DellFanManagement.App
             consistencyModeApplyChangesButton.Click += new EventHandler(ConsistencyApplyChangesButtonClickedEventHandler);
 
             // ...Cpu Freq limit...
+            ACCpuFreq1TextBox.TextChanged += new EventHandler(CpuFreqChangedEventHandler);
+            DCCpuFreq1TextBox.TextChanged += new EventHandler(CpuFreqChangedEventHandler);
             ACCpuFreqTextBox.TextChanged += new EventHandler(CpuFreqChangedEventHandler);
             DCCpuFreqTextBox.TextChanged += new EventHandler(CpuFreqChangedEventHandler);
             ApplyCpuFreqButton.Click += new EventHandler(ApplyCpuFreqButtonClickedEventHandler);
@@ -394,6 +396,28 @@ namespace DellFanManagement.App
             }
 
             // CPU Frequency limits
+
+            // P-Cores
+            int? ACCpuFreq1 = _configurationStore.GetIntOption(ConfigurationOption.ACCpuFreq1);
+            if (ACCpuFreq1 == null)
+            {
+                ACCpuFreq1TextBox.Text = "";
+            }
+            else
+            {
+                ACCpuFreq1TextBox.Text = ACCpuFreq1.ToString();
+            }
+            int? DCCpuFreq1 = _configurationStore.GetIntOption(ConfigurationOption.DCCpuFreq1);
+            if (DCCpuFreq1 == null)
+            {
+                DCCpuFreq1TextBox.Text = "";
+            }
+            else
+            {
+                DCCpuFreq1TextBox.Text = DCCpuFreq1.ToString();
+            }
+
+            // E-Cores
             int? ACCpuFreq = _configurationStore.GetIntOption(ConfigurationOption.ACCpuFreq);
             if (ACCpuFreq == null)
             {
@@ -412,7 +436,6 @@ namespace DellFanManagement.App
             {
                 DCCpuFreqTextBox.Text = DCCpuFreq.ToString();
             }
-
 
             // Power schemes 
             /*
@@ -1155,17 +1178,31 @@ namespace DellFanManagement.App
         {
             bool success = false;
 
+            // P-cores
+            if (Regex.IsMatch(ACCpuFreq1TextBox.Text, "[^0-9]"))
+            {
+                ACCpuFreq1TextBox.Text = Regex.Replace(ACCpuFreq1TextBox.Text, "[^0-9]", "");
+            }
+            success = (ACCpuFreq1TextBox.Text == "") || int.TryParse(ACCpuFreq1TextBox.Text, out int ACCpuFreq1);
+
+            if (Regex.IsMatch(DCCpuFreq1TextBox.Text, "[^0-9]"))
+            {
+                DCCpuFreq1TextBox.Text = Regex.Replace(DCCpuFreq1TextBox.Text, "[^0-9]", "");
+            }
+            success = (DCCpuFreq1TextBox.Text == "") || int.TryParse(DCCpuFreq1TextBox.Text, out int DCCpuFreq1);
+
+            // E-cores
             if (Regex.IsMatch(ACCpuFreqTextBox.Text, "[^0-9]"))
             {
                 ACCpuFreqTextBox.Text = Regex.Replace(ACCpuFreqTextBox.Text, "[^0-9]", "");
             }
-            success = int.TryParse(ACCpuFreqTextBox.Text, out int ACCpuFreq);
+            success = (ACCpuFreqTextBox.Text == "") || int.TryParse(ACCpuFreqTextBox.Text, out int ACCpuFreq);
 
             if (Regex.IsMatch(DCCpuFreqTextBox.Text, "[^0-9]"))
             {
                 DCCpuFreqTextBox.Text = Regex.Replace(DCCpuFreqTextBox.Text, "[^0-9]", "");
             }
-            success = int.TryParse(DCCpuFreqTextBox.Text, out int DCCpuFreq);
+            success = (DCCpuFreqTextBox.Text == "") || int.TryParse(DCCpuFreqTextBox.Text, out int DCCpuFreq);
 
             ApplyCpuFreqButton.Enabled = success;
         }
@@ -1175,9 +1212,10 @@ namespace DellFanManagement.App
             // Create a new task using existing xml description
             try
             {
+                // P-cores
                 Process p = new Process();
                 p.StartInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "powercfg.exe");
-                p.StartInfo.Arguments = "  /setDCvalueindex scheme_current SUB_PROCESSOR PROCFREQMAX " + DCCpuFreqTextBox.Text;
+                p.StartInfo.Arguments = "  /setDCvalueindex scheme_current SUB_PROCESSOR PROCFREQMAX1 " + (DCCpuFreq1TextBox.Text == "" ? "0" : DCCpuFreq1TextBox.Text);
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 p.StartInfo.CreateNoWindow = true;
@@ -1186,15 +1224,43 @@ namespace DellFanManagement.App
                 p.WaitForExit();
                 p.Close();
 
-                p.StartInfo.Arguments = "  /setACvalueindex scheme_current SUB_PROCESSOR PROCFREQMAX " + ACCpuFreqTextBox.Text;
+                p.StartInfo.Arguments = "  /setACvalueindex scheme_current SUB_PROCESSOR PROCFREQMAX1 " + (ACCpuFreq1TextBox.Text == "" ? "0" : ACCpuFreq1TextBox.Text);
                 p.Start();
                 p.WaitForExit();
                 p.Close();
 
-                bool success = int.TryParse(ACCpuFreqTextBox.Text, out int ACCpuFreq);
+                // E-cores
+                p.StartInfo.Arguments = "  /setDCvalueindex scheme_current SUB_PROCESSOR PROCFREQMAX " + (DCCpuFreqTextBox.Text == "" ? "0" : DCCpuFreqTextBox.Text);
+                p.Start();
+                p.WaitForExit();
+                p.Close();
+
+                p.StartInfo.Arguments = "  /setACvalueindex scheme_current SUB_PROCESSOR PROCFREQMAX " + (ACCpuFreqTextBox.Text == "" ? "0" : ACCpuFreqTextBox.Text);
+                p.Start();
+                p.WaitForExit();
+                p.Close();
+
+                // Apply
+                p.StartInfo.Arguments = "  /setactive scheme_current";
+                p.Start();
+                p.WaitForExit();
+                p.Close();
+
+                bool success = int.TryParse(ACCpuFreq1TextBox.Text, out int ACCpuFreq1);
                 if (success)
                 {
-                    _configurationStore.SetOption(ConfigurationOption.ACCpuFreq, ACCpuFreq);
+                    _configurationStore.SetOption(ConfigurationOption.ACCpuFreq, ACCpuFreq1);
+                }
+                success = int.TryParse(DCCpuFreq1TextBox.Text, out int DCCpuFreq1);
+                if (success)
+                {
+                    _configurationStore.SetOption(ConfigurationOption.DCCpuFreq, DCCpuFreq1);
+                }
+
+                success = int.TryParse(ACCpuFreqTextBox.Text, out int ACCpuFreq);
+                if (success)
+                {
+                    _configurationStore.SetOption(ConfigurationOption.DCCpuFreq, ACCpuFreq);
                 }
                 success = int.TryParse(DCCpuFreqTextBox.Text, out int DCCpuFreq);
                 if (success)

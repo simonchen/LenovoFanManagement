@@ -61,6 +61,8 @@
         public static readonly ConfigurationOption AllowBacklightDelay = new(ConfigurationOptionType.Integer, "AllowBacklightDelay");
         public static readonly ConfigurationOption BacklightDelay = new(ConfigurationOptionType.Integer, "BacklightDelay");
         // CPU Freq limit refers to https://superuser.com/questions/1786286/set-cpu-frequency-in-windows-10-no-longer-works
+        public static readonly ConfigurationOption ACCpuFreq1 = new(ConfigurationOptionType.Integer, "ACCpuFreq1");
+        public static readonly ConfigurationOption DCCpuFreq1 = new(ConfigurationOptionType.Integer, "DCCpuFreq1");
         public static readonly ConfigurationOption ACCpuFreq = new(ConfigurationOptionType.Integer, "ACCpuFreq");
         public static readonly ConfigurationOption DCCpuFreq = new(ConfigurationOptionType.Integer, "DCCpuFreq");
 
