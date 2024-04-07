@@ -1247,23 +1247,23 @@ namespace DellFanManagement.App
                 p.Close();
 
                 bool success = int.TryParse(ACCpuFreq1TextBox.Text, out int ACCpuFreq1);
-                if (success)
+                //if (success)
                 {
                     _configurationStore.SetOption(ConfigurationOption.ACCpuFreq1, ACCpuFreq1);
                 }
                 success = int.TryParse(DCCpuFreq1TextBox.Text, out int DCCpuFreq1);
-                if (success)
+                //if (success)
                 {
                     _configurationStore.SetOption(ConfigurationOption.DCCpuFreq1, DCCpuFreq1);
                 }
 
                 success = int.TryParse(ACCpuFreqTextBox.Text, out int ACCpuFreq);
-                if (success)
+                //if (success)
                 {
-                    _configurationStore.SetOption(ConfigurationOption.DCCpuFreq, ACCpuFreq);
+                    _configurationStore.SetOption(ConfigurationOption.ACCpuFreq, ACCpuFreq);
                 }
                 success = int.TryParse(DCCpuFreqTextBox.Text, out int DCCpuFreq);
-                if (success)
+                //if (success)
                 {
                     _configurationStore.SetOption(ConfigurationOption.DCCpuFreq, DCCpuFreq);
                 }
