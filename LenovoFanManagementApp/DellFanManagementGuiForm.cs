@@ -1582,7 +1582,7 @@ namespace DellFanManagement.App
         private void ChargeThresholdSelectEventHandler(object sender, EventArgs e)
         {
             ComboBox cb = sender as ComboBox;
-            if (!cb.Focused)
+            //if (!cb.Focused)
             {
                 if (sender == chargeStopThresholdComboBox)
                 {
@@ -1591,7 +1591,7 @@ namespace DellFanManagement.App
                 {
                     _prevStartChargeIndex = cb.SelectedIndex;
                 }
-                return;
+                //return;
             }
             
             string val_str = cb.GetItemText(cb.Items[cb.SelectedIndex]);

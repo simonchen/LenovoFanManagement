@@ -1267,7 +1267,7 @@ namespace DellFanManagement.App
             this.MaximizeBox = false;
             this.Name = "DellFanManagementGuiForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Lenovo 风扇-键盘-电池-CPU (仅适用于EC控制 | Envy Chen | 2024-4-5)";
+            this.Text = "Lenovo 风扇-键盘-电池-CPU (仅适用于EC控制 | Envy Chen | 2024-4-9)";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.DellFanManagementGuiForm_Load);
             this.fansGroupBox.ResumeLayout(false);
