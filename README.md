@@ -9,6 +9,12 @@ This project is based on [ec_tpfan](https://github.com/simonchen/ec_tpfan)
 **使用此程序自担风险！Enjoy it !**
 
 ## V2.0
+This update has improved, and there are new keyboards, batteries, and CPU controls. It can be said that it is relatively complete, all integrated together (lazy usage)
+
+The automatic closing method of the keyboard backlight does not rely on Lenovo's driver, but only passed on ThinkPad E16.
+Battery charging control relies on Lenovo ACPI power management driver.
+CPU frequency control dependency system comes with command PowerCFG.exe control.
+
 ### 新增
 - 高级选项：不检测GPU温度) | 隐藏桌面水印 (隐藏由于测试签名打开后在Windows桌面出现的水印警告）
 - 键盘管理：手动打开键盘背光，可按设定延迟关闭，按任意键再次自动打开背光
