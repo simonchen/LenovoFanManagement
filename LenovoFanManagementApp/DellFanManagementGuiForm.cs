@@ -1059,7 +1059,14 @@ namespace DellFanManagement.App
             {
                 File.Copy(strLogTempl, strLogFile);
             }
-            Process.Start("notepad.exe", strLogFile);
+            try
+            {
+                Process.Start("notepad.exe", strLogFile);
+            }
+            catch(Exception expt)
+            {
+
+            }
         }
 
         /// <summary>
