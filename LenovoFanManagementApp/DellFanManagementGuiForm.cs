@@ -149,6 +149,9 @@ namespace DellFanManagement.App
             operationModeRadioButtonAutomatic.CheckedChanged += new EventHandler(ConfigurationRadioButtonAutomaticEventHandler);
             operationModeRadioButtonManual.CheckedChanged += new EventHandler(ConfigurationRadioButtonManualEventHandler);
             operationModeRadioButtonConsistency.CheckedChanged += new EventHandler(ConfigurationRadioButtonConsistencyEventHandler);
+            operationModeRadioButtonCustom.CheckedChanged += new EventHandler(ConfigurationRadioButtonCustomEventHandler);
+
+            editFanButton.Click += new EventHandler(EditFanSpeedEventHandler);
 
             // ...Consistency mode section...
             stopFanCheckbox.CheckedChanged += new EventHandler(ConsistencyModeTextBoxesChangedEventHandler);
@@ -187,6 +190,14 @@ namespace DellFanManagement.App
 
             chargeStartControlCheckBox.CheckedChanged += new EventHandler(ChargeStartControlChangedEventHandler);
             chargeStopControlCheckBox.CheckedChanged += new EventHandler(ChargeStopControlChangedEventHandler);
+
+            logCheckBox.CheckedChanged += new EventHandler(LogCheckBoxChangedEventHandler);
+
+            if (UacHelper.IsSystemProcess())
+            {
+                //hideWatermarkCheckBox.Enabled = false;
+                //startupCheckBox.Enabled = false;
+            }
 
             if (_battery.HasBattery)
             {
@@ -290,6 +301,13 @@ namespace DellFanManagement.App
             if (_configurationStore.GetIntOption(ConfigurationOption.TrayIconAnimationEnabled) == 0)
             {
                 animatedCheckBox.Checked = false;
+            }
+
+            // Logging enabled?
+            if (_configurationStore.GetIntOption(ConfigurationOption.AllowLogWriteToFile) == 0 ||
+                _configurationStore.GetIntOption(ConfigurationOption.AllowLogWriteToFile) == null)
+            {
+                logCheckBox.Checked = false;
             }
 
             // Gpu Temparature detected?
@@ -474,6 +492,13 @@ namespace DellFanManagement.App
                             modeSet = true;
                         }
                         break;
+                    case OperationMode.Consistency2:
+                        if (operationModeRadioButtonCustom.Enabled)
+                        {
+                            operationModeRadioButtonCustom.Checked = true;
+                            modeSet = true;
+                        }
+                        break;
                 }
             }
             if (!modeSet)
@@ -654,7 +679,10 @@ namespace DellFanManagement.App
                     labelIndex++;
                 }
             }
-            avg_temperature = total_temperature / cpu_count;
+            if (cpu_count > 0)
+            {
+                avg_temperature = total_temperature / cpu_count;
+            }
 
             // EC fan control enabled?
             if (_state.OperationMode != OperationMode.Manual)
@@ -837,6 +865,7 @@ namespace DellFanManagement.App
 
             SetFanControlsAvailability(false);
             SetConsistencyModeControlsAvailability(false);
+            editFanButton.Enabled = false;
             SetEcFanControlsAvailability(false);
 
             UpdateTrayIcon(false);
@@ -853,6 +882,7 @@ namespace DellFanManagement.App
 
             SetFanControlsAvailability(false);
             SetConsistencyModeControlsAvailability(false);
+            editFanButton.Enabled = false;
             SetEcFanControlsAvailability(true);
 
             UpdateTrayIcon(false);
@@ -869,6 +899,24 @@ namespace DellFanManagement.App
 
             SetFanControlsAvailability(false);
             SetConsistencyModeControlsAvailability(true);
+            editFanButton.Enabled = false;
+            SetEcFanControlsAvailability(false);
+
+            UpdateTrayIcon(false);
+        }
+
+        /// <summary>
+        /// Called when "Custom" configuration radio button is clicked.
+        /// </summary>
+        private void ConfigurationRadioButtonCustomEventHandler(Object sender, EventArgs e)
+        {
+            _core.SetConsistencyMode2();
+            _configurationStore.SetOption(ConfigurationOption.OperationMode, OperationMode.Consistency2);
+            ClearManualControlConfiguration();
+
+            SetFanControlsAvailability(false);
+            SetConsistencyModeControlsAvailability(false);
+            editFanButton.Enabled = true;
             SetEcFanControlsAvailability(false);
 
             UpdateTrayIcon(false);
@@ -1001,6 +1049,17 @@ namespace DellFanManagement.App
                 _core.RequestThermalSetting(ThermalSetting.Performance);
             }
             */
+        }
+
+        private void EditFanSpeedEventHandler(Object sender, EventArgs e)
+        {
+            string strLogFile = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "fan.ini");
+            string strLogTempl = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "fan.ini.templ");
+            if (File.Exists(strLogTempl) && !File.Exists(strLogFile))
+            {
+                File.Copy(strLogTempl, strLogFile);
+            }
+            Process.Start("notepad.exe", strLogFile);
         }
 
         /// <summary>
@@ -1332,6 +1391,12 @@ namespace DellFanManagement.App
             _configurationStore.SetOption(ConfigurationOption.TrayIconAnimationEnabled, animatedCheckBox.Checked ? 1 : 0);
         }
 
+        private void LogCheckBoxChangedEventHandler(Object sender, EventArgs e)
+        {
+            Log.AllowingLogWriteToFile = logCheckBox.Checked ? true : false;
+            _configurationStore.SetOption(ConfigurationOption.AllowLogWriteToFile, logCheckBox.Checked ? 1 : 0);
+        }
+
         private void StartupCheckBoxChangedEventHandler(Object sender, EventArgs e)
         {
             _configurationStore.SetOption(ConfigurationOption.StartupEnabled, startupCheckBox.Checked ? 1 : 0);
@@ -1342,6 +1407,7 @@ namespace DellFanManagement.App
                 {
                     // Replace {exe_path} with current path
                     string filename = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
+                    string curDir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
                     string filePath = string.Format("\"{0}{1}{2}.exe\"", Directory.GetCurrentDirectory(), Path.DirectorySeparatorChar, filename);
                     StreamReader sr = File.OpenText(xmlPath);
                     string xmlContent = sr.ReadToEnd().Replace("{exe_path}", filePath);
@@ -1568,7 +1634,8 @@ namespace DellFanManagement.App
             if (hideWatermarkCheckBox.Checked)
             {
                 string filename = "painter_x64.dll";
-                string filePath = string.Format("{0}{1}{2}", Directory.GetCurrentDirectory(), Path.DirectorySeparatorChar, filename);
+                string curDir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                string filePath = string.Format("{0}{1}{2}", curDir, Path.DirectorySeparatorChar, filename);
                 UpdateWatermarkRegistry(filePath);
             }
             else
@@ -1979,6 +2046,11 @@ namespace DellFanManagement.App
         }
 
         private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
 
         }

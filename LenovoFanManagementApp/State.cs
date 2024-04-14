@@ -135,6 +135,13 @@ namespace DellFanManagement.App
             _consecutiveThermalSettingFailures = 0;
             _thermalSettingReadBackoff = 0;
 
+            int? enableLogFile = configurationStore.GetIntOption(ConfigurationOption.AllowLogWriteToFile);
+            if (enableLogFile == null)
+            {
+                enableLogFile = 0;
+            }
+            Log.AllowingLogWriteToFile = (enableLogFile > 0) ? true : false;
+
             int? enableBacklight = configurationStore.GetIntOption(ConfigurationOption.AllowBacklightDelay);
             int? backLightDelay = configurationStore.GetIntOption(ConfigurationOption.BacklightDelay);
             if (enableBacklight == null)

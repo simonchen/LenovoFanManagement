@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Forms;
 using System.Threading;
+using DellFanManagement.App.FanControllers;
 
 namespace DellFanManagement.App
 {
@@ -60,6 +61,8 @@ namespace DellFanManagement.App
                 {
                     MessageBox.Show(string.Format("{0}: {1}\n{2}", exception.GetType().ToString(), exception.Message, exception.StackTrace),
                         "Error starting application", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    BzhFanController bfc = new BzhFanController();
+                    bfc.EnableAutomaticFanControl(); // Force-managed by EC iteslef for avoiding issue.
                     return 1;
                 }
 

@@ -156,6 +156,16 @@ namespace DellFanManagement.App
         }
 
         /// <summary>
+        /// Switch configuration to custom mode.
+        /// </summary>
+        public void SetConsistencyMode2()
+        {
+            _state.WaitOne();
+            _state.OperationMode = OperationMode.Consistency2;
+            _state.Release();
+        }
+
+        /// <summary>
         /// Request that EC fan control be enabled or disabled.
         /// </summary>
         /// <param name="enabled">True to enable EC fan control, false to disable it</param>
@@ -339,6 +349,10 @@ namespace DellFanManagement.App
                     {
                         // Consistency mode logic.
                         _consistencyModeHandler.RunConsistencyModeLogic();
+                    }
+                    else if (_state.OperationMode == OperationMode.Consistency2)
+                    {
+                        _consistencyModeHandler.RunConsistencyModeLogic2();
                     }
 
                     // See if we need to update the BIOS thermal setting.

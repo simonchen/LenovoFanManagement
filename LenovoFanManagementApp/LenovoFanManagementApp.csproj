@@ -52,6 +52,7 @@
     <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
     <PackageReference Include="MouseKeyHook" Version="5.7.1" />
     <PackageReference Include="NvAPIWrapper.Net" Version="0.8.1.101" />
+    <PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="7.0.3" />
   </ItemGroup>
@@ -86,6 +87,9 @@
 	 <None Update="painter_x64.dll">
 	   <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>  
 	 </None>
+	<None Update="fan.ini.templ">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
 	 <None Update="task.xml">
        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	 </None>

@@ -54,9 +54,11 @@ namespace DellFanManagement.App
             this.temperatureLabel2 = new System.Windows.Forms.Label();
             this.temperatureLabel1 = new System.Windows.Forms.Label();
             this.operationModeGroupBox = new System.Windows.Forms.GroupBox();
+            this.operationModeRadioButtonCustom = new System.Windows.Forms.RadioButton();
             this.operationModeRadioButtonConsistency = new System.Windows.Forms.RadioButton();
             this.operationModeRadioButtonManual = new System.Windows.Forms.RadioButton();
             this.operationModeRadioButtonAutomatic = new System.Windows.Forms.RadioButton();
+            this.editFanButton = new System.Windows.Forms.Button();
             this.manualGroupBox = new System.Windows.Forms.GroupBox();
             this.manualFan2GroupBox = new System.Windows.Forms.GroupBox();
             this.manualFan2RadioButtonHigh = new System.Windows.Forms.RadioButton();
@@ -126,6 +128,7 @@ namespace DellFanManagement.App
             this.ApplyCpuFreqButton = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.AdvancedGroupBox = new System.Windows.Forms.GroupBox();
+            this.logCheckBox = new System.Windows.Forms.CheckBox();
             this.fansGroupBox.SuspendLayout();
             this.temperatureGroupBox.SuspendLayout();
             this.operationModeGroupBox.SuspendLayout();
@@ -387,9 +390,11 @@ namespace DellFanManagement.App
             // 
             // operationModeGroupBox
             // 
+            this.operationModeGroupBox.Controls.Add(this.operationModeRadioButtonCustom);
             this.operationModeGroupBox.Controls.Add(this.operationModeRadioButtonConsistency);
             this.operationModeGroupBox.Controls.Add(this.operationModeRadioButtonManual);
             this.operationModeGroupBox.Controls.Add(this.operationModeRadioButtonAutomatic);
+            this.operationModeGroupBox.Controls.Add(this.editFanButton);
             this.operationModeGroupBox.Location = new System.Drawing.Point(612, 21);
             this.operationModeGroupBox.Margin = new System.Windows.Forms.Padding(5);
             this.operationModeGroupBox.Name = "operationModeGroupBox";
@@ -399,15 +404,27 @@ namespace DellFanManagement.App
             this.operationModeGroupBox.TabStop = false;
             this.operationModeGroupBox.Text = "模式:";
             // 
+            // operationModeRadioButtonCustom
+            // 
+            this.operationModeRadioButtonCustom.Location = new System.Drawing.Point(114, 38);
+            this.operationModeRadioButtonCustom.Margin = new System.Windows.Forms.Padding(5);
+            this.operationModeRadioButtonCustom.Name = "operationModeRadioButtonCustom";
+            this.operationModeRadioButtonCustom.Size = new System.Drawing.Size(115, 37);
+            this.operationModeRadioButtonCustom.TabIndex = 2;
+            this.operationModeRadioButtonCustom.TabStop = true;
+            this.operationModeRadioButtonCustom.Text = "平滑(B)";
+            this.operationModeRadioButtonCustom.UseVisualStyleBackColor = true;
+            this.operationModeRadioButtonCustom.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
             // operationModeRadioButtonConsistency
             // 
             this.operationModeRadioButtonConsistency.Location = new System.Drawing.Point(10, 124);
             this.operationModeRadioButtonConsistency.Margin = new System.Windows.Forms.Padding(5);
             this.operationModeRadioButtonConsistency.Name = "operationModeRadioButtonConsistency";
-            this.operationModeRadioButtonConsistency.Size = new System.Drawing.Size(133, 37);
+            this.operationModeRadioButtonConsistency.Size = new System.Drawing.Size(128, 37);
             this.operationModeRadioButtonConsistency.TabIndex = 2;
             this.operationModeRadioButtonConsistency.TabStop = true;
-            this.operationModeRadioButtonConsistency.Text = "平滑";
+            this.operationModeRadioButtonConsistency.Text = "平滑(A)";
             this.operationModeRadioButtonConsistency.UseVisualStyleBackColor = true;
             // 
             // operationModeRadioButtonManual
@@ -415,7 +432,7 @@ namespace DellFanManagement.App
             this.operationModeRadioButtonManual.Location = new System.Drawing.Point(10, 82);
             this.operationModeRadioButtonManual.Margin = new System.Windows.Forms.Padding(5);
             this.operationModeRadioButtonManual.Name = "operationModeRadioButtonManual";
-            this.operationModeRadioButtonManual.Size = new System.Drawing.Size(133, 33);
+            this.operationModeRadioButtonManual.Size = new System.Drawing.Size(105, 33);
             this.operationModeRadioButtonManual.TabIndex = 1;
             this.operationModeRadioButtonManual.TabStop = true;
             this.operationModeRadioButtonManual.Text = "手动";
@@ -426,11 +443,21 @@ namespace DellFanManagement.App
             this.operationModeRadioButtonAutomatic.Location = new System.Drawing.Point(10, 38);
             this.operationModeRadioButtonAutomatic.Margin = new System.Windows.Forms.Padding(5);
             this.operationModeRadioButtonAutomatic.Name = "operationModeRadioButtonAutomatic";
-            this.operationModeRadioButtonAutomatic.Size = new System.Drawing.Size(133, 34);
+            this.operationModeRadioButtonAutomatic.Size = new System.Drawing.Size(105, 34);
             this.operationModeRadioButtonAutomatic.TabIndex = 0;
             this.operationModeRadioButtonAutomatic.TabStop = true;
             this.operationModeRadioButtonAutomatic.Text = "自动";
             this.operationModeRadioButtonAutomatic.UseVisualStyleBackColor = true;
+            // 
+            // editFanButton
+            // 
+            this.editFanButton.Location = new System.Drawing.Point(131, 75);
+            this.editFanButton.Margin = new System.Windows.Forms.Padding(5);
+            this.editFanButton.Name = "editFanButton";
+            this.editFanButton.Size = new System.Drawing.Size(88, 44);
+            this.editFanButton.TabIndex = 14;
+            this.editFanButton.Text = "编辑";
+            this.editFanButton.UseVisualStyleBackColor = true;
             // 
             // manualGroupBox
             // 
@@ -584,7 +611,7 @@ namespace DellFanManagement.App
             this.consistencyModeGroupBox.Size = new System.Drawing.Size(352, 241);
             this.consistencyModeGroupBox.TabIndex = 10;
             this.consistencyModeGroupBox.TabStop = false;
-            this.consistencyModeGroupBox.Text = "平滑模式选项";
+            this.consistencyModeGroupBox.Text = "平滑(A)选项";
             // 
             // label2
             // 
@@ -827,7 +854,7 @@ namespace DellFanManagement.App
             this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.consistencyModeStatusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 651);
+            this.statusStrip.Location = new System.Drawing.Point(0, 659);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 24, 0);
             this.statusStrip.Size = new System.Drawing.Size(1252, 37);
@@ -1228,23 +1255,36 @@ namespace DellFanManagement.App
             // AdvancedGroupBox
             // 
             this.AdvancedGroupBox.Controls.Add(this.gpuTCheckBox);
+            this.AdvancedGroupBox.Controls.Add(this.logCheckBox);
             this.AdvancedGroupBox.Controls.Add(this.animatedCheckBox);
             this.AdvancedGroupBox.Controls.Add(this.startupCheckBox);
             this.AdvancedGroupBox.Controls.Add(this.trayIconCheckBox);
             this.AdvancedGroupBox.Controls.Add(this.hideWatermarkCheckBox);
             this.AdvancedGroupBox.Location = new System.Drawing.Point(612, 200);
             this.AdvancedGroupBox.Name = "AdvancedGroupBox";
-            this.AdvancedGroupBox.Size = new System.Drawing.Size(228, 285);
+            this.AdvancedGroupBox.Size = new System.Drawing.Size(228, 293);
             this.AdvancedGroupBox.TabIndex = 20;
             this.AdvancedGroupBox.TabStop = false;
             this.AdvancedGroupBox.Text = "高级选项";
             // 
+            // logCheckBox
+            // 
+            this.logCheckBox.Checked = true;
+            this.logCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.logCheckBox.Location = new System.Drawing.Point(126, 209);
+            this.logCheckBox.Margin = new System.Windows.Forms.Padding(5);
+            this.logCheckBox.Name = "logCheckBox";
+            this.logCheckBox.Size = new System.Drawing.Size(94, 32);
+            this.logCheckBox.TabIndex = 17;
+            this.logCheckBox.Text = "日志";
+            this.logCheckBox.UseVisualStyleBackColor = true;
+            // 
             // DellFanManagementGuiForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 28F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(1252, 688);
+            this.ClientSize = new System.Drawing.Size(1252, 696);
             this.Controls.Add(this.AdvancedGroupBox);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.limitFrequencyGroupBox);
@@ -1267,7 +1307,7 @@ namespace DellFanManagement.App
             this.MaximizeBox = false;
             this.Name = "DellFanManagementGuiForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Lenovo 风扇-键盘-电池-CPU (仅适用于EC控制 | Envy Chen | 2024-4-9)";
+            this.Text = "Lenovo 风扇-键盘-电池-CPU (仅适用于EC控制 | Envy Chen | 2024-4-14)";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.DellFanManagementGuiForm_Load);
             this.fansGroupBox.ResumeLayout(false);
@@ -1396,6 +1436,9 @@ namespace DellFanManagement.App
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox DCCpuFreqTextBox;
         private System.Windows.Forms.TextBox ACCpuFreqTextBox;
+        private System.Windows.Forms.RadioButton operationModeRadioButtonCustom;
+        private System.Windows.Forms.Button editFanButton;
+        private System.Windows.Forms.CheckBox logCheckBox;
     }
 }
 

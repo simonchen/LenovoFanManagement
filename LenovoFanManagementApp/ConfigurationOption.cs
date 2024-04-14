@@ -66,6 +66,9 @@
         public static readonly ConfigurationOption ACCpuFreq = new(ConfigurationOptionType.Integer, "ACCpuFreq");
         public static readonly ConfigurationOption DCCpuFreq = new(ConfigurationOptionType.Integer, "DCCpuFreq");
 
+        // Logging
+        public static readonly ConfigurationOption AllowLogWriteToFile = new(ConfigurationOptionType.Integer, "AllowLogWriteToFile");
+
         /// <summary>
         /// Lower temperature threshold for consistency mode.
         /// </summary>
