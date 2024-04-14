@@ -1,6 +1,8 @@
 ﻿using LibreHardwareMonitor.Hardware;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 
 namespace DellFanManagement.App.TemperatureReaders
 {

@@ -184,5 +184,10 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
         /// <see cref="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthreadid"/>
         [DllImport("kernel32.dll")]
         static extern uint GetCurrentThreadId();
+
+        public override void RunConsistencyModeLogic2()
+        {
+            // Do nothing
+        }
     }
 }

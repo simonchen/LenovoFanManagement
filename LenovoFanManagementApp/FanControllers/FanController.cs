@@ -1,4 +1,6 @@
-﻿namespace DellFanManagement.App.FanControllers
+﻿using DellFanManagement.DellSmbiozBzhLib;
+
+namespace DellFanManagement.App.FanControllers
 {
     /// <summary>
     /// Interface for fan speed controller implementations.
@@ -39,6 +41,8 @@
         /// <param name="fanIndex">Which fan to set.</param>
         /// <returns>True on succes, false on failure.</returns>
         public abstract bool SetFanLevel(FanLevel level, FanIndex fanIndex);
+
+        public abstract bool SetFanLevelSpecific(BzhFanLevel level, FanIndex fanIndex);
 
         /// <summary>
         /// Perform any steps needed to "clean up" as the program is terminating.

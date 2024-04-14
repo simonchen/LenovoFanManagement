@@ -116,6 +116,30 @@ namespace DellFanManagement.App.FanControllers
             }
         }
 
+        public override bool SetFanLevelSpecific(BzhFanLevel level, FanIndex fanIndex)
+        {
+            if (DellSmbiosBzh.IsInitialized)
+            {
+                bool result1 = true;
+                bool result2 = true;
+
+                if (fanIndex == FanIndex.Fan1 || fanIndex == FanIndex.AllFans)
+                {
+                    result1 = DellSmbiosBzh.SetFanLevel(BzhFanIndex.Fan1, level);
+                }
+
+                if (fanIndex == FanIndex.Fan2 || fanIndex == FanIndex.AllFans)
+                {
+                    result2 = DellSmbiosBzh.SetFanLevel(BzhFanIndex.Fan2, level);
+                }
+
+                return result1 && result2;
+            }
+            else
+            {
+                return false;
+            }
+        }
         /// <summary>
         /// Unload the BZH driver.
         /// </summary>

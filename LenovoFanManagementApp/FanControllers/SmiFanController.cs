@@ -1,4 +1,5 @@
 ﻿using DellFanManagement.DellSmbiosSmiLib;
+using DellFanManagement.DellSmbiozBzhLib;
 
 namespace DellFanManagement.App.FanControllers
 {
@@ -66,6 +67,11 @@ namespace DellFanManagement.App.FanControllers
             }
 
             return DellSmbiosSmi.SetFanLevel(smiLevel);
+        }
+
+        public override bool SetFanLevelSpecific(BzhFanLevel level, FanIndex fanIndex)
+        {
+            return DellSmbiosBzh.SetFanLevel((fanIndex == FanIndex.Fan1) ? BzhFanIndex.Fan1 : BzhFanIndex.Fan2, level);
         }
 
         /// <summary>

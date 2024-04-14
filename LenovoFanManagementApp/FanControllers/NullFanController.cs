@@ -1,4 +1,6 @@
-﻿namespace DellFanManagement.App.FanControllers
+﻿using DellFanManagement.DellSmbiozBzhLib;
+
+namespace DellFanManagement.App.FanControllers
 {
     /// <summary>
     /// This fan controller can't actually control the fans.
@@ -40,6 +42,11 @@
         /// <param name="fanIndex">Which fan to set.</param>
         /// <returns>True on succes, false on failure.</returns>
         public override bool SetFanLevel(FanLevel level, FanIndex fanIndex)
+        {
+            return false;
+        }
+
+        public override bool SetFanLevelSpecific(BzhFanLevel level, FanIndex fanIndex)
         {
             return false;
         }

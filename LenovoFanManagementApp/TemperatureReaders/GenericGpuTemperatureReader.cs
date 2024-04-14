@@ -15,6 +15,7 @@ namespace DellFanManagement.App.TemperatureReaders
             };
 
             _computer.Open();
+            Log.WriteToFile(string.Format("Generic Gpu report:\r\n{0}", _computer.GetReport()));
         }
     }
 }

@@ -1,7 +1,11 @@
 ﻿using DellFanManagement.App.FanControllers;
 using DellFanManagement.App.TemperatureReaders;
+using Salaros.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using DellFanManagement.DellSmbiozBzhLib;
+using System.Threading;
 
 namespace DellFanManagement.App.ConsistencyModeHandlers
 {
@@ -10,6 +14,13 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
     /// </summary>
     public class LegacyConsistencyModeHandler : ConsistencyModeHandler
     {
+        protected Dictionary<int, int[]> fanDict = new();
+        FileSystemWatcher watcher;
+        /// <summary>
+        /// Semaphore for protecting access to fanDict changes.
+        /// </summary>
+        private readonly Semaphore _semaphore = new Semaphore(1,1);
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -18,7 +29,113 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
         /// <param name="fanController">The fan controller currently in use.</param>
         public LegacyConsistencyModeHandler(Core core, State state, FanController fanController) : base(core, state, fanController)
         {
-            // No action here.
+            // Init Fan info.
+            InitFanInfo();
+
+            // Monitor fan.ini if changed.
+            string curDir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            watcher = new FileSystemWatcher(curDir);
+
+            watcher.NotifyFilter = NotifyFilters.Attributes
+                                 | NotifyFilters.CreationTime
+                                 | NotifyFilters.DirectoryName
+                                 | NotifyFilters.FileName
+                                 | NotifyFilters.LastAccess
+                                 | NotifyFilters.LastWrite
+                                 | NotifyFilters.Security
+                                 | NotifyFilters.Size;
+
+            watcher.Changed += new FileSystemEventHandler(OnFanInfoChanged);
+            watcher.Created += new FileSystemEventHandler(OnFanInfoCreated);
+            watcher.Renamed += new RenamedEventHandler(OnFanInfoRenamed);
+            watcher.Filter = "fan.ini";
+            watcher.IncludeSubdirectories = true;
+            watcher.EnableRaisingEvents = true;
+        }
+
+        private void InitFanInfo()
+        {
+            fanDict.Clear();
+            string curDir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            string iniPath = string.Format("{0}{1}{2}", Directory.GetCurrentDirectory(), Path.DirectorySeparatorChar, "fan.ini");
+            if (!File.Exists(iniPath))
+            {
+                return;
+            }
+
+            _semaphore.WaitOne();
+            var config = new ConfigParser(iniPath);
+            List<int> validLevel = new List<int>()
+            {
+                0,1,2,3,4,5,6,7,64
+            };
+            foreach (ConfigSection section in config.Sections)
+            {
+                /*
+                if (section.SectionName == "RPM_DELAY")
+                {
+                    foreach (IConfigKeyValue item in section.Keys)
+                    {
+
+                    }
+                }
+                */
+
+                if (section.SectionName == "RPM_TEMP")
+                {
+                    foreach (IConfigKeyValue item in section.Keys)
+                    {
+                        try
+                        {
+                            string[] arr = item.ValueRaw.ToString().Split("-");
+                            int[] arr2 = new int[]
+                            {
+                                int.Parse(arr[0]),
+                                int.Parse(arr[1])
+                            };
+                            if (item.Name.ToLower() == "auto")
+                            {
+                                fanDict.Add(AUTO_LEVEL, arr2);
+                            }
+                            else
+                            {
+                                int level = int.Parse(item.Name);
+                                if (validLevel.IndexOf(level) >= 0)
+                                {
+                                    fanDict.Add(level, arr2);
+                                }
+                            }
+                        }
+                        catch (Exception expt)
+                        {
+                            // Do nothing
+
+                        }
+                    }
+                }
+            }
+            _semaphore.Release();
+        }
+
+        private void OnFanInfoCreated(object sender, FileSystemEventArgs e)
+        {
+            InitFanInfo();
+            string value = $"Created: {e.FullPath}";
+            Console.WriteLine(value);
+        }
+        private void OnFanInfoRenamed(object sender, FileSystemEventArgs e)
+        {
+            InitFanInfo();
+            Console.WriteLine($"Renamed:");
+        }
+        private void OnFanInfoChanged(object sender, FileSystemEventArgs e)
+        {
+            if (e.ChangeType != WatcherChangeTypes.Changed)
+            {
+                return;
+            }
+            InitFanInfo();
+            Console.WriteLine($"Changed: {e.FullPath}");
         }
 
         /// <summary>
@@ -321,6 +438,107 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
                         _core.TrayIconColor = TrayIconColor.Gray;
                 }
             }
+        }
+
+        private class ClosestFanLevel
+        {
+            public int level;
+            public int absDiff;
+        }
+        public static int AUTO_LEVEL = 99;
+        public static int FAN_LEVEL_DELAY = 3; // in seconds
+        public static int _fan_level_loops = 0;
+        public static int _cur_fan_level = -1; // current fan level
+
+        public override void RunConsistencyModeLogic2()
+        {
+            if (fanDict.Count == 0)
+            {
+                _fanController.EnableAutomaticFanControl();
+                _cur_fan_level = AUTO_LEVEL;
+                return;
+            }
+
+            int cur_temp = 0;
+            foreach (TemperatureComponent component in _state.Temperatures.Keys)
+            {
+                foreach (KeyValuePair<string, int> temperature in _state.Temperatures[component])
+                {
+                    //if (component == TemperatureComponent.CPU &&
+                    //    temperature.Key.ToLower().IndexOf("package") >= 0) continue; // Ignore CPU Package temperature
+                    cur_temp = Math.Max(temperature.Value, cur_temp);
+                }
+            }
+
+            // Look up the Fan level on fanDict
+            _semaphore.WaitOne();
+            int fanLevel = -1; // Invalid level
+            bool bFound = false;
+            List<ClosestFanLevel> rpmList = new List<ClosestFanLevel>();
+            foreach (KeyValuePair<int, int[]> item in fanDict)
+            {
+                int configLevel = item.Key;
+                int min_val = item.Value[0];
+                int max_val = item.Value[1];
+
+                if (cur_temp >= min_val && cur_temp <= max_val)
+                {
+                    fanLevel = configLevel;
+                    bFound = true;
+                    break;
+                }
+                else
+                {
+                    int absDiff = Math.Min(Math.Abs(cur_temp - min_val), Math.Abs(cur_temp - max_val));
+                    if (absDiff <= 5) // For safely, we don't allow that difference is greater than 5 degree that would damage CPU/GPU
+                    {
+                        rpmList.Add(new ClosestFanLevel() { level = configLevel, absDiff = absDiff});
+                    }
+                }
+            }
+            _semaphore.Release();
+
+            if (!bFound && rpmList.Count > 0)
+            {
+                rpmList.Sort((item1, item2) => (item1.absDiff > item2.absDiff ? 1 : -1));
+                fanLevel = (int)rpmList[0].level;
+            }
+
+            if (fanLevel == -1 || fanLevel == AUTO_LEVEL)
+            {
+                _fanController.EnableAutomaticFanControl();
+                _cur_fan_level = AUTO_LEVEL;
+                _state.ConsistencyModeStatus = "EC自动调节...";
+                _core.TrayIconColor = TrayIconColor.Gray;
+                return;
+            }
+
+            if (_fan_level_loops > FAN_LEVEL_DELAY)
+                _fan_level_loops = 0;
+            if (_fan_level_loops == 0)
+            {
+                _fanController.SetFanLevelSpecific((BzhFanLevel)fanLevel, FanIndex.AllFans);
+                _cur_fan_level = fanLevel;
+                if (fanLevel == 0)
+                {
+                    _state.ConsistencyModeStatus = "关闭风扇";
+                    _core.TrayIconColor = TrayIconColor.Gray;
+                }
+                else 
+                {
+                    if (fanLevel < 7)
+                    {
+                        _state.ConsistencyModeStatus = string.Format("风扇转速: {0} 档", fanLevel);
+                        _core.TrayIconColor = TrayIconColor.Blue;
+                    }
+                    else
+                    {
+                        _state.ConsistencyModeStatus = string.Format("风扇转速: {0} 档", fanLevel);
+                        _core.TrayIconColor = TrayIconColor.Red;
+                    }
+                }
+            }
+            _fan_level_loops += 1;
         }
     }
 }

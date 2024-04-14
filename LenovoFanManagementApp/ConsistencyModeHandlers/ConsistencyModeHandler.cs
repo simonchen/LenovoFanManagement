@@ -39,5 +39,7 @@ namespace DellFanManagement.App.ConsistencyModeHandlers
         /// Logic for a particular consistency mode implementation.
         /// </summary>
         public abstract void RunConsistencyModeLogic();
+
+        public abstract void RunConsistencyModeLogic2();
     }
 }

@@ -29,6 +29,7 @@ namespace DellFanManagement.App.TemperatureReaders
 
             try
             {
+                Log.WriteToFile(string.Format("Physical GPU count: {0}", PhysicalGPU.GetPhysicalGPUs().Length));
                 foreach (PhysicalGPU gpu in PhysicalGPU.GetPhysicalGPUs())
                 {
                     name = gpuNames.ContainsKey(gpu.GPUId) ? gpuNames[gpu.GPUId] : "Unknown GPU";

@@ -1,4 +1,6 @@
 ﻿using LibreHardwareMonitor.Hardware;
+using System;
+using System.Windows.Forms;
 
 namespace DellFanManagement.App.TemperatureReaders
 {
@@ -18,6 +20,8 @@ namespace DellFanManagement.App.TemperatureReaders
             };
 
             _computer.Open();
+            //string report = _computer.GetReport();
+            Log.WriteToFile(string.Format("CPU report\r\n:{0}", _computer.GetReport()));
         }
     }
 }
