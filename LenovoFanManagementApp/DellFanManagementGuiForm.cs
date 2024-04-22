@@ -80,6 +80,8 @@ namespace DellFanManagement.App
         private int _prevStartChargeIndex;
         private int _prevStopChargeIndex;
 
+        private Guid _activePlan;
+
         /// <summary>
         /// Constructor.  Get everything set up before the window is displayed.
         /// </summary>
@@ -455,9 +457,7 @@ namespace DellFanManagement.App
                 DCCpuFreqTextBox.Text = DCCpuFreq.ToString();
             }
 
-            // Power schemes 
             /*
-            Guid activePlan = PowerManager.GetActivePlan();
             List<Guid> plans = PowerManager.ListPlans();
             for (int i = 0; i < plans.Count; i++)
             {
@@ -843,6 +843,23 @@ namespace DellFanManagement.App
                     }
                     _registeredPowerProfile = _state.ActivePowerProfile;
                 }
+            }
+
+            // Power schemes (Always monitoring current actived power scheme)
+            Guid activePlan = PowerManager.GetActivePlan();
+            if (activePlan != _activePlan)
+            {
+                _activePlan = activePlan;
+                activePowerPlanLabel.Text = "(当前电源计划:" + PowerManager.GetPlanName(activePlan) + ")";
+                uint acFreqMax = PowerManager.GetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX, PowerMode.AC);
+                uint dcFreqMax = PowerManager.GetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX, PowerMode.DC);
+                uint acFreqMax1 = PowerManager.GetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX1, PowerMode.AC);
+                uint dcFreqMax1 = PowerManager.GetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX1, PowerMode.DC);
+
+                ACCpuFreqTextBox.Text = acFreqMax.ToString();
+                ACCpuFreq1TextBox.Text = acFreqMax1.ToString();
+                DCCpuFreqTextBox.Text = dcFreqMax.ToString();
+                DCCpuFreq1TextBox.Text = dcFreqMax1.ToString();
             }
 
             _state.Release();
@@ -1279,6 +1296,7 @@ namespace DellFanManagement.App
             try
             {
                 // P-cores
+                /*
                 Process p = new Process();
                 p.StartInfo.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "powercfg.exe");
                 p.StartInfo.Arguments = "  /setDCvalueindex scheme_current SUB_PROCESSOR PROCFREQMAX1 " + (DCCpuFreq1TextBox.Text == "" ? "0" : DCCpuFreq1TextBox.Text);
@@ -1311,6 +1329,17 @@ namespace DellFanManagement.App
                 p.Start();
                 p.WaitForExit();
                 p.Close();
+                */
+                Guid activePlan = PowerManager.GetActivePlan();
+                uint acFreq1 = (ACCpuFreq1TextBox.Text == "") ? 0 : uint.Parse(ACCpuFreq1TextBox.Text);
+                uint dcFreq1 = (DCCpuFreq1TextBox.Text == "") ? 0 : uint.Parse(DCCpuFreq1TextBox.Text);
+                uint acFreq = (ACCpuFreqTextBox.Text == "") ? 0 : uint.Parse(ACCpuFreqTextBox.Text);
+                uint dcFreq = (DCCpuFreqTextBox.Text == "") ? 0 : uint.Parse(DCCpuFreqTextBox.Text);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX1, PowerMode.AC, acFreq1);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX1, PowerMode.DC, dcFreq1);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX, PowerMode.AC, acFreq);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX, PowerMode.DC, dcFreq);
+                PowerManager.SetActivePlan(activePlan);
 
                 bool success = int.TryParse(ACCpuFreq1TextBox.Text, out int ACCpuFreq1);
                 //if (success)

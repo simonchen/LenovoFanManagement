@@ -113,6 +113,7 @@ namespace DellFanManagement.App
             this.chargeStopControlCheckBox = new System.Windows.Forms.CheckBox();
             this.chargeStartControlCheckBox = new System.Windows.Forms.CheckBox();
             this.limitFrequencyGroupBox = new System.Windows.Forms.GroupBox();
+            this.activePowerPlanLabel = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -1088,6 +1089,7 @@ namespace DellFanManagement.App
             // 
             // limitFrequencyGroupBox
             // 
+            this.limitFrequencyGroupBox.Controls.Add(this.activePowerPlanLabel);
             this.limitFrequencyGroupBox.Controls.Add(this.label12);
             this.limitFrequencyGroupBox.Controls.Add(this.label10);
             this.limitFrequencyGroupBox.Controls.Add(this.label11);
@@ -1106,7 +1108,18 @@ namespace DellFanManagement.App
             this.limitFrequencyGroupBox.Size = new System.Drawing.Size(661, 116);
             this.limitFrequencyGroupBox.TabIndex = 19;
             this.limitFrequencyGroupBox.TabStop = false;
-            this.limitFrequencyGroupBox.Text = "限制CPU频率(当前电源计划)";
+            this.limitFrequencyGroupBox.Text = "限制CPU频率 ";
+            // 
+            // activePowerPlanLabel
+            // 
+            this.activePowerPlanLabel.AutoSize = true;
+            this.activePowerPlanLabel.Location = new System.Drawing.Point(138, 0);
+            this.activePowerPlanLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.activePowerPlanLabel.Name = "activePowerPlanLabel";
+            this.activePowerPlanLabel.Size = new System.Drawing.Size(177, 28);
+            this.activePowerPlanLabel.TabIndex = 18;
+            this.activePowerPlanLabel.Text = "(当前电源计划: ）";
+            this.activePowerPlanLabel.Click += new System.EventHandler(this.label2_Click);
             // 
             // label12
             // 
@@ -1439,6 +1452,7 @@ namespace DellFanManagement.App
         private System.Windows.Forms.RadioButton operationModeRadioButtonCustom;
         private System.Windows.Forms.Button editFanButton;
         private System.Windows.Forms.CheckBox logCheckBox;
+        private System.Windows.Forms.Label activePowerPlanLabel;
     }
 }
 

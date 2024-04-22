@@ -45,6 +45,7 @@ namespace PowerManagerAPI
         DISKIDLE,
         ASPM,
         PROCFREQMAX,
+        PROCFREQMAX1,
         PROCTHROTTLEMAX,
         PROCTHROTTLEMIN,
         SYSCOOLPOL,
@@ -83,7 +84,8 @@ namespace PowerManagerAPI
             { Setting.UIBUTTON_ACTION,  new Guid("a7066653-8d6c-40a8-910e-a1f54b84c7e5") },
             { Setting.DISKIDLE,         new Guid("6738e2c4-e8a5-4a42-b16a-e040e769756e") },
             { Setting.ASPM,             new Guid("ee12f906-d277-404b-b6da-e5fa1a576df5") },
-            { Setting.PROCFREQMAX,      new Guid("75b0ae3f-bce0-45a7-8c89-c9611c25e100") },
+            { Setting.PROCFREQMAX,      new Guid("75b0ae3f-bce0-45a7-8c89-c9611c25e100") }, // E-Core
+            { Setting.PROCFREQMAX1,      new Guid("75b0ae3f-bce0-45a7-8c89-c9611c25e101") }, // P-Core
             { Setting.PROCTHROTTLEMAX,  new Guid("bc5038f7-23e0-4960-96da-33abaf5935ec") },
             { Setting.PROCTHROTTLEMIN,  new Guid("893dee8e-2bef-41e0-89c6-b55d0929964c") },
             { Setting.SYSCOOLPOL,       new Guid("94d3a615-a899-4ac5-ae2b-e4d8f634367f") },
