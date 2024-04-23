@@ -203,6 +203,7 @@ namespace LibreHardwareMonitor.Hardware.Cpu
                             case 0xB7: // Raptor Lake (7nm)
                             case 0xBA: // Raptor Lake-P (7nm)
                             case 0xBF: // Raptor Lake-N (7nm)
+                            case 0xAA: // Ultra (7nm) guessed [Simon]
                                 _microArchitecture = MicroArchitecture.RaptorLake;
                                 tjMax = GetTjMaxFromMsr();
                                 break;
