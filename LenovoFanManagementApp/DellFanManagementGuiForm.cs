@@ -1335,10 +1335,24 @@ namespace DellFanManagement.App
                 uint dcFreq1 = (DCCpuFreq1TextBox.Text == "") ? 0 : uint.Parse(DCCpuFreq1TextBox.Text);
                 uint acFreq = (ACCpuFreqTextBox.Text == "") ? 0 : uint.Parse(ACCpuFreqTextBox.Text);
                 uint dcFreq = (DCCpuFreqTextBox.Text == "") ? 0 : uint.Parse(DCCpuFreqTextBox.Text);
+                // assign freq. for P/E cores
                 PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX1, PowerMode.AC, acFreq1);
                 PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX1, PowerMode.DC, dcFreq1);
                 PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX, PowerMode.AC, acFreq);
                 PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCFREQMAX, PowerMode.DC, dcFreq);
+                // if we'd limit the freq. for P/E cores, we'll have to set the minimize processor state as 5% better, and maximum processor state as 100%,
+                // otherwise, above assigned freq. wouldn't be applied as well.
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCTHROTTLEMAX1, PowerMode.AC, 100);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCTHROTTLEMAX1, PowerMode.DC, 100);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCTHROTTLEMAX, PowerMode.AC, 100);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCTHROTTLEMAX, PowerMode.DC, 100);
+
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCTHROTTLEMIN1, PowerMode.AC, 100);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCTHROTTLEMIN1, PowerMode.DC, 100);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCTHROTTLEMIN, PowerMode.AC, 5);
+                PowerManager.SetPlanSetting(activePlan, SettingSubgroup.PROCESSOR_SETTINGS_SUBGROUP, Setting.PROCTHROTTLEMIN, PowerMode.DC, 5);
+
+                // active current scheme
                 PowerManager.SetActivePlan(activePlan);
 
                 bool success = int.TryParse(ACCpuFreq1TextBox.Text, out int ACCpuFreq1);
