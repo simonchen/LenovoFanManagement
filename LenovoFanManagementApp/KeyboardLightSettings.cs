@@ -18,12 +18,11 @@ namespace DellFanManagement.App
 
         private readonly object lighting = new object();
 
-
-        public enum BackLightLevel : byte
+        public enum BackLightLevel
         {
-            Low = 0x43,
-            High = 0x83,
-            Off = 0x03
+            Low,
+            High,
+            Off
         }
 
         public KeyboardLightSettings(int delayInterval=10)
@@ -65,27 +64,52 @@ namespace DellFanManagement.App
             _DelaySeconds = 0;
         }
 
-        protected BackLightLevel GetBackLightState()
+        private byte ReadBackLightRegValue()
         {
-            BackLightLevel level = BackLightLevel.Off;
-            for (int i = 0; i < 3; i++)
+            byte val = 0;
+            for (int i = 0; i < 3; i++) // max. 3 times on retry
             {
-                level = (BackLightLevel)DellSmbiosBzh.readByte(_reg);
-                if (level != 0)
+                val = DellSmbiosBzh.readByte(_reg);
+                if (val != 0)
                     break;
             }
 
+            return val;
+        }
+
+        protected BackLightLevel GetBackLightState()
+        {
+            BackLightLevel level = BackLightLevel.Off;
+            byte val = ReadBackLightRegValue();
+
+            if ((val & 0x40) == 0x40)
+            {
+                level = BackLightLevel.Low;
+            }
+            if ((val & 0x80) == 0x80)
+            {
+                level = BackLightLevel.High;
+            }
             return level;
         }
 
         protected void ToggleBackLight(BackLightLevel level)
         {
-            DellSmbiosBzh.writeByte(_reg, (byte)level);
+            byte val = ReadBackLightRegValue();
+            if (level == BackLightLevel.Low)
+                val |= 0x40;
+            if (level == BackLightLevel.High)
+                val |= 0x80;
+            if (level == BackLightLevel.Off)
+                val &= 0x3F;
+            DellSmbiosBzh.writeByte(_reg, val);
         }
 
         protected void CloseBackLight()
         {
-            DellSmbiosBzh.writeByte(_reg, (byte)BackLightLevel.Off);
+            byte val = ReadBackLightRegValue();
+            val &= 0x3F;
+            DellSmbiosBzh.writeByte(_reg, val);
         }
 
         private void GlobalHookOnKeyDown(object sender, KeyEventArgs e)
