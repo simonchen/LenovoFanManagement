@@ -3,6 +3,7 @@
 Windows Desktop App. to manage Lenovo Fan RPM special for Thinkpad E16 gen 1 ，but it might works with other type of Thinkpad.
 - OS: Windows 10 / 11
 - Platform: x64
+- Runtime: .NET Desktop Runtime 5.0.17 (桌面运行时库) 直接[微软网站下载](https://dotnet.microsoft.com/en-us/download/dotnet/5.0)安装。
 
 This project is based on [ec_tpfan](https://github.com/simonchen/ec_tpfan)
 
